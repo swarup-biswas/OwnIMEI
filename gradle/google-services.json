@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "311897609445",
+    "firebase_url": "https://ownimei-8a784.firebaseio.com",
+    "project_id": "ownimei-8a784",
+    "storage_bucket": "ownimei-8a784.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:311897609445:android:7c7ef889875b2a3a",
+        "android_client_info": {
+          "package_name": "com.example.ownimei"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "311897609445-m0d0e93abd08snika1aqcimmbvmffe0a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ownimei",
+            "certificate_hash": "f970cfcaf7b59d5e3512e675fb853c184e235356"
+          }
+        },
+        {
+          "client_id": "311897609445-u5irqs28p5id38esnqe2drumm6sm0dic.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANwwcikmI-PwgbyE9fDmcgjCVNKE27REA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "311897609445-u5irqs28p5id38esnqe2drumm6sm0dic.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

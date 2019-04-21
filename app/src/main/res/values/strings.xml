@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">OwnIMEI</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string-array name="statusList">
+        <item>Safe mode</item>
+        <item>Lost mode</item>
+        <item>Stolen mode</item>
+    </string-array>
+
+    <string-array name="category">
+        <item>Phone</item>
+        <item>Laptop</item>
+    </string-array>
+
+    <string-array name="device_info">
+        <item>Edit</item>
+        <item>Delete</item>
+    </string-array>
+    <string-array name="edit_delete">
+        <item>Edit</item>
+        <item>Delete</item>
+    </string-array>
+</resources>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/edit_profile"
+            android:title="Edit Profile" />
+        <item
+            android:id="@+id/add_device"
+            android:title="Add Device" />
+        <item
+            android:id="@+id/search"
+            android:title="Search" />
+        <item
+            android:id="@+id/about_us"
+            android:title="About us" />
+        <item
+            android:id="@+id/help"
+            android:title="Help" />
+        <item
+            android:id="@+id/sign_out"
+            android:title="Sign out" />
+    </group>
+
+</menu>

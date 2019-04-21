@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <!--<ImageView-->
+                <!--android:id="@+id/show_next_btn_ID"-->
+                <!--android:layout_width="50dp"-->
+                <!--android:layout_height="50dp"-->
+                <!--android:layout_alignParentEnd="true"-->
+                <!--android:layout_centerVertical="true"-->
+                <!--android:layout_margin="5dp"-->
+                <!--android:elevation="10dp"-->
+                <!--android:visibility="gone"-->
+                <!--android:scaleType="centerCrop"-->
+                <!--android:src="@drawable/ic_arrow_home_next" />-->
+
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    app:cardElevation="5dp"
+                    app:cardUseCompatPadding="true"
+                    app:cardCornerRadius="5dp">
+
+                    <LinearLayout
+                        android:id="@+id/vh_total_linear_Id"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/vh_device"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Device type : "
+                                android:textColor="@color/colorLightBlack"
+                                android:textSize="@dimen/font_size_16" />
+
+                            <TextView
+                                android:id="@+id/vh_device_type"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Phone"
+                                android:textColor="@color/colorLightBlack"
+                                android:textSize="@dimen/font_size_16" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/vh_model"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Model : "
+                                android:textColor="@color/colorLightBlack"
+                                android:textSize="@dimen/font_size_16" />
+
+                            <TextView
+                                android:id="@+id/vh_model_name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Samsung S9"
+                                android:textColor="@color/colorLightBlack"
+                                android:textSize="@dimen/font_size_16" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/lIMEIone"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:orientation="horizontal">
+
+
+                            <TextView
+                                android:id="@+id/vh_imei_one"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="IMEI1 : "
+                                android:textColor="@color/colorLightBlack"
+                                android:textSize="@dimen/font_size_16"
+                                android:visibility="visible" />
+
+                            <TextView
+                                android:id="@+id/vh_imei_one_name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="54685965854456"
+                                android:textColor="@color/colorLightBlack"
+                                android:textSize="@dimen/font_size_16"
+                                android:visibility="visible" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/lIMEItwo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/vh_imei_two"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="IMEI2 : "
+                                android:textColor="@color/colorLightBlack"
+                                android:textSize="@dimen/font_size_16"
+                                android:visibility="visible" />
+
+                            <TextView
+                                android:id="@+id/vh_imei_two_name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="54685965854456"
+                                android:textColor="@color/colorLightBlack"
+                                android:textSize="@dimen/font_size_16"
+                                android:visibility="visible" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/lMAc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/vh_mac"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Mac : "
+                                android:textColor="@color/colorLightBlack"
+                                android:textSize="@dimen/font_size_16"
+                                android:visibility="visible" />
+
+                            <TextView
+                                android:id="@+id/vh_mac_ID"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="54685965854456"
+                                android:textColor="@color/colorLightBlack"
+                                android:textSize="@dimen/font_size_16"
+                                android:visibility="visible" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/vh_purchase"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Purchase date : "
+                                android:textColor="@color/colorLightBlack"
+                                android:textSize="@dimen/font_size_16" />
+
+                            <TextView
+                                android:id="@+id/vh_purchase_date"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="15/02/2019"
+                                android:textColor="@color/colorLightBlack"
+                                android:textSize="@dimen/font_size_16" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/vh_status"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Status : "
+                                android:textColor="@color/colorLightBlack"
+                                android:textSize="24sp" />
+
+                            <TextView
+                                android:id="@+id/vh_status_name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Safe mode"
+                                android:textColor="@color/colorLightBlack"
+                                android:textSize="24sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </android.support.v7.widget.CardView>
+            </LinearLayout>
+        </RelativeLayout>
+</LinearLayout>

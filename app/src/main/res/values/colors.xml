@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#96B3C7</color>
+    <color name="colorPrimaryDark">#96B3C7</color>
+    <color name="colorAccent">#96B3C7</color>
+
+    <color name="colorPrimaryWhite">#FFFFFF</color>
+    <color name="colorPrimaryYellow">#FCE406</color>
+    <color name="colorInsideSearchText">#4B5968</color>
+    <color name="colorInsideSearch">#96B3C7</color>
+    <color name="colorButton">#507AA9</color>
+    <color name="colorLightBlack">#4B4D50</color>
+    <color name="colorText">#E6E9EE</color>
+    <color name="colorHintText">#C1C6CE</color>
+    <color name="colorActionBar">#364AAF</color>
+    <color name="colorGreen">#0FB30F</color>
+    <color name="colorYellow">#FFFF00</color>
+    <color name="colorRed">#D82525</color>
+</resources>
