@@ -18,13 +18,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ownimei.R;
 import com.example.ownimei.StaticClass.StaticClass;
 import com.example.ownimei.pojo.AddDeviceModel;
 import com.example.ownimei.pojo.SignUpModel;
+import com.example.ownimei.popUp.SignUpPopUpActivity;
 import com.example.ownimei.recycleview.AddDeviceAdapter;
+import com.google.android.gms.flags.Flag;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -54,6 +58,11 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
     private FirebaseFirestore firebaseFirestore;
     static String mVerificationId;
     public static final String USER_ID = "User_Id";
+    private TextView forgotPass;
+    private LinearLayout signIN;
+
+    private String phone;
+    private String gender;
 
 
 
@@ -72,6 +81,10 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         passID = findViewById(R.id.sign_UP_pass_ID);
         retypePassID = findViewById(R.id.sign_UP_retype_pass_ID);
         signUpBtnID = findViewById(R.id.sign_UP_btn_ID);
+        forgotPass = findViewById(R.id.sign_up_forgot_password_ID);
+        signIN = findViewById(R.id.signUp_signIn_ID);
+        forgotPass.setOnClickListener(this);
+        signIN.setOnClickListener(this);
         signUpBackBtn.setOnClickListener(this);
         signUpBtnID.setOnClickListener(this);
 
@@ -87,6 +100,12 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
             case R.id.sign_UP_btn_ID:
                 signUPMethod();
+                break;
+            case R.id.sign_up_forgot_password_ID:
+                startActivity(new Intent(SignUp.this,ForgotPasswordInputMailOrPhone.class));
+                break;
+            case R.id.signUp_signIn_ID:
+                startActivity(new Intent(SignUp.this,SignIn.class));
                 break;
         }
 
@@ -120,18 +139,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
             builder.show();
             return;
         }
-        if (lastName.isEmpty()) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(SignUp.this);
-            builder.setMessage("Please enter your last name");
-            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
 
-                }
-            });
-            builder.show();
-            return;
-        }
         //Email validation check
         if (email.isEmpty()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(SignUp.this);
@@ -218,7 +226,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
 
-                        SignUpModel userInformation = new SignUpModel(firstName, lastName, email);
+                        SignUpModel userInformation = new SignUpModel(firstName,lastName, email,phone,gender);
                         DocumentReference userData = firebaseFirestore.collection("UserInformations").document(task.getResult().getUser().getUid());
                         userData.set(userInformation).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
@@ -236,24 +244,16 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                                 if (task.isSuccessful()) {
                                     hideProgressBar();
 
-                                    final AlertDialog.Builder builder = new AlertDialog.Builder(SignUp.this);
-                                    builder.setMessage("Verification link send.Please check your email.").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            Intent signUpIntent = new Intent(SignUp.this, SignIn.class);
-                                            startActivity(signUpIntent);
-                                            auth.signOut();
-                                            finish();
-                                        }
-                                    });
-                                    AlertDialog dialog = builder.create();
-                                    dialog.setCancelable(false);
-                                    dialog.show();
+                                    Intent intent = new Intent(SignUp.this, SignUpPopUpActivity.class);
+//                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(intent);
+                                    auth.signOut();
+                                    finish();
 
                                 } else {
                                     hideProgressBar();
                                     AlertDialog.Builder builder = new AlertDialog.Builder(SignUp.this);
-                                    builder.setMessage("" + task.getException().getMessage());
+                                    builder.setMessage("" + task.getException());
                                     builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
@@ -261,7 +261,6 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                                         }
                                     });
                                     builder.show();
-//                                    Toast.makeText(SignUp.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                                     auth.signOut();
                                     finish();
                                 }
@@ -282,74 +281,6 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                     }
                 }
             });
-//
-//            auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-//                @Override
-//                public void onComplete(@NonNull final Task<AuthResult> task) {
-//                    try {
-//
-//                    }catch (Exception e){
-//
-//                    }
-//                     SignUpModel userInformation = new SignUpModel(firstName, lastName, email);
-//                     DocumentReference userData = firebaseFirestore.collection("UserInformations").document(task.getResult().getUser().getUid());
-//                    userData.set(userInformation)
-//                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                @Override
-//                                public void onComplete(@NonNull Task<Void> task) {
-//                                    if (task.isSuccessful()) {
-//                                        hideProgressBar();
-//
-//                                        auth.getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                            @Override
-//                                            public void onComplete(@NonNull Task<Void> task) {
-//                                                if (task.isSuccessful()) {
-//                                                    SharedPreferences.Editor editor = getSharedPreferences(USER_ID, MODE_PRIVATE).edit();
-//                                                    String userID = auth.getUid();
-//                                                    editor.putString("get_UID", "" + userID);
-//                                                    editor.apply();
-//                                                    Toast.makeText(SignUp.this, "Signed up successfully.Please check your email for verification.", Toast.LENGTH_SHORT).show();
-//                                                    //SignUp success token
-//                                                    SharedPreferences.Editor successEditor = getSharedPreferences(SIGN_UP_TOKEN, MODE_PRIVATE).edit();
-//                                                    String token = "" + 200;
-//                                                    successEditor.putString("get_successToken", token).apply();
-//
-//                                                    Intent signUpIntent = new Intent(SignUp.this, SignIn.class);
-//                                                    startActivity(signUpIntent);
-//                                                    finish();
-//                                                } else {
-//                                                    Toast.makeText(SignUp.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-//                                                }
-//
-//                                            }
-//                                        });
-//                                    } else {
-//                                        if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-//                                            AlertDialog.Builder builder = new AlertDialog.Builder(SignUp.this);
-//                                            builder.setMessage("You are already registered");
-//                                            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-//                                                @Override
-//                                                public void onClick(DialogInterface dialog, int which) {
-//
-//                                                }
-//                                            });
-//                                            builder.show();
-//                                        } else {
-//                                            AlertDialog.Builder builder = new AlertDialog.Builder(SignUp.this);
-//                                            builder.setMessage("" + task.getException().getMessage());
-//                                            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-//                                                @Override
-//                                                public void onClick(DialogInterface dialog, int which) {
-//
-//                                                }
-//                                            });
-//                                            builder.show();
-//                                        }
-//                                    }
-//                                }
-//                            });
-//                }
-//            });
         }
     }
 

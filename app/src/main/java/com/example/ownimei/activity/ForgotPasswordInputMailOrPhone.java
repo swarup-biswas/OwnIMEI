@@ -1,7 +1,9 @@
 package com.example.ownimei.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -53,8 +55,16 @@ public class ForgotPasswordInputMailOrPhone extends AppCompatActivity implements
     private void forgotPassImplementMethod() {
         final String forgotEmail = setEmailId.getText().toString().trim();
         if (forgotEmail.isEmpty()){
-            setEmailId.setError("Email required");
-            setEmailId.findFocus();
+            AlertDialog.Builder builder  = new AlertDialog.Builder(ForgotPasswordInputMailOrPhone.this);
+            builder.setMessage("Please enter your password");
+            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorRed));
             return;
         }
         showProgressBar();

@@ -1,14 +1,16 @@
 package com.example.ownimei.activity;
 
-import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.provider.CallLog;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
@@ -16,17 +18,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
+import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,46 +37,32 @@ import com.bumptech.glide.Glide;
 import com.example.ownimei.R;
 import com.example.ownimei.StaticClass.StaticClass;
 import com.example.ownimei.pojo.AddDeviceModel;
-import com.example.ownimei.pojo.AddLaptopModel;
-import com.example.ownimei.pojo.SignUpModel;
-import com.example.ownimei.pojo.UserModeModel;
 import com.example.ownimei.recycleview.AddDeviceAdapter;
 import com.example.ownimei.recycleview.ViewHolder;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseException;
-import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.PhoneAuthCredential;
-import com.google.firebase.auth.PhoneAuthProvider;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.hbb20.CountryCodePicker;
 import com.kaopiz.kprogresshud.KProgressHUD;
-import com.squareup.picasso.Picasso;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.Date;
 
 import javax.annotation.Nullable;
 
@@ -85,6 +74,7 @@ import static com.example.ownimei.activity.SignUp.USER_ID;
 
 
 public class UserProfile extends AppCompatActivity implements View.OnClickListener, ViewHolder.LongPressInterface {
+    private FloatingActionButton floatingActionButton;
     private TextView signOutId;
     private ImageView searchBtn;
     private ImageView menuButton;
@@ -101,7 +91,7 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
 //    private String codeSent;
     //User profile image
     private CircleImageView profileImage;
-    private ImageView editImage;
+    //    private ImageView editImage;
     private static final int CODE_IMAGE_GALLERY = 1;
     private static final String SAMPLE_CROPPED_IMAGE_NAME = "IMEICropImage";
     private String destinationFileName;
@@ -122,10 +112,14 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
     private FirebaseAuth authOwner;
     private FirebaseFirestore db;
     private FirebaseStorage firebaseStorage;
+    private StorageReference storageRef;
     //Mode status
     private String[] modeName;
 
     private String selectDeviceForFirstSignin;
+
+    private String uId;
+
 
     //Recycle view
     RecyclerView recyclerView;
@@ -139,19 +133,21 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
         authOwner = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
+        storageRef = firebaseStorage.getReference();
+
+        // Retrieve data from preference
+        SharedPreferences sharedUId = getSharedPreferences(USER_ID, MODE_PRIVATE);
+        uId = sharedUId.getString("get_UID", "");
 
         drawerImage = findViewById(R.id.drawer_pro_image_ID);
         drawerName = findViewById(R.id.drawer_user_name_ID);
+
+        floatingActionButton = findViewById(R.id.add_floating_button);
 
         signOutId = findViewById(R.id.user_profile_sign_out_ID);
         searchBtn = findViewById(R.id.user_profile_search_ID);
         ownerNameId = findViewById(R.id.ownerFirstNameID);
         emailId = findViewById(R.id.ownerEmailID);
-//        phoneNumberId = findViewById(R.id.owner_phone_ID);
-//        countryCodePicker = findViewById(R.id.country_code_picker_ID);
-//        countryCodePicker.registerCarrierNumberEditText(phoneNumberId);
-//        profileSaveButton = findViewById(R.id.profile_save_button_ID);
-
         // Menu button find and set click
         menuButton = findViewById(R.id.user_profile_menu_ID);
         drawerLayout = findViewById(R.id.drawer_layout_main);
@@ -166,9 +162,9 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
         menuSignOut = findViewById(R.id.menu_sign_out);
 
         //User profile image
-        editImage = findViewById(R.id.user_profile_edit_image_ic_ID);
+//        editImage = findViewById(R.id.user_profile_edit_image_ic_ID);
         profileImage = findViewById(R.id.user_profile_image_ID);
-
+        floatingActionButton.setOnClickListener(this);
         signOutId.setOnClickListener(this);
         searchBtn.setOnClickListener(this);
 //        statusChangeId.setOnClickListener(this);
@@ -182,7 +178,7 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
         menuAbout.setOnClickListener(this);
         menuSignOut.setOnClickListener(this);
         //User profile image
-        editImage.setOnClickListener(this);
+//        editImage.setOnClickListener(this);
         profileImage.setOnClickListener(this);
         //
 //        profileSaveButton.setOnClickListener(this);
@@ -193,7 +189,6 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
         emailId.setText(uEmail);
         drawerName.setText(uName);
 
-
         loadUserInformation();
 
     }
@@ -202,8 +197,12 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.add_floating_button:
+                startActivity(new Intent(UserProfile.this, AddDevice.class));
+                break;
+
             case R.id.user_profile_image_ID:
-                largeViewProPic();
+                editUserProImage();
                 break;
             case R.id.user_profile_sign_out_ID:
                 signOutUser();
@@ -222,7 +221,7 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
                 openDrawerMenu();
                 break;
             case R.id.menu_edit_profile:
-                editProfile();
+                startActivity(new Intent(UserProfile.this, EditProfileActivity.class));
                 drawerLayout.closeDrawer(GravityCompat.START);
                 break;
             case R.id.menu_add_device:
@@ -247,89 +246,13 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
             case R.id.menu_sign_out:
                 signOutUser();
                 break;
-            //User profile image
-            case R.id.user_profile_edit_image_ic_ID:
-                editUserProImage();
-                break;
+//            //User profile image
+//            case R.id.user_profile_edit_image_ic_ID:
+//
+//                break;
 
         }
     }
-
-//    private void phoneAuth() {
-//        String phoneNumber = countryCodePicker.getFullNumberWithPlus();
-//        if (phoneNumber.isEmpty() && phoneNumber.length() < 10) {
-//            AlertDialog.Builder builder = new AlertDialog.Builder(UserProfile.this);
-//            builder.setMessage("Please input your number").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-//                @Override
-//                public void onClick(DialogInterface dialog, int which) {
-//
-//                }
-//            }).show();
-//        }
-//
-//        PhoneAuthProvider.getInstance().verifyPhoneNumber(
-//                phoneNumber,        // Phone number to verify
-//                60,                 // Timeout duration
-//                TimeUnit.SECONDS,   // Unit of timeout
-//                this,               // Activity (for callback binding)
-//                mCallbacks);
-//        AlertDialog.Builder builder = new AlertDialog.Builder(UserProfile.this);
-//        View view = getLayoutInflater().inflate(R.layout.phone_code_verify, null);
-//        final EditText mCode = view.findViewById(R.id.phone_code_ID);
-//        Button mCodeButton = view.findViewById(R.id.phone_verification_button_ID);
-//        mCodeButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                String finalMCode = mCode.getText().toString();
-//                Log.i("Phone#####", "" + finalMCode);
-//                Log.i("Phone00000", "" + codeSent);
-//                PhoneAuthCredential credential = PhoneAuthProvider.getCredential(codeSent, finalMCode);
-//                signInWithPhoneAuthCredential(credential);
-//
-//                    Toast.makeText(UserProfile.this, "Phone verification success", Toast.LENGTH_SHORT).show();
-//                    Log.i("Phone00000", "" + codeSent);
-//            }
-//        });
-//        builder.setView(view);
-//        AlertDialog alertDialog = builder.create();
-//        alertDialog.show();
-//    }
-//
-//    private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
-//        authOwner.signInWithCredential(credential)
-//                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<AuthResult> task) {
-//                        if (task.isSuccessful()) {
-//
-//                        } else {
-//
-//                        }
-//                    }
-//                });
-//    }
-//
-//
-//    PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-//        @Override
-//        public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-//            Toast.makeText(UserProfile.this, "Verification code send to your phone.", Toast.LENGTH_SHORT).show();
-//
-//        }
-//
-//        @Override
-//        public void onVerificationFailed(FirebaseException e) {
-//        }
-//
-//        @Override
-//        public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-//            super.onCodeSent(s, forceResendingToken);
-//            codeSent = s;
-//            Log.i("Phone5555", "" + codeSent);
-//
-//        }
-//
-//    };
 
     //Device current position
     private void devicePosition() {
@@ -342,19 +265,30 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
 
     }
 
-
-    //Pro pic large view
-    private void largeViewProPic() {
-
-    }
     //On Click Listener end
 
 
-    //User profile image start
+    //    //User profile image start
     private void editUserProImage() {
-        startActivityForResult(new Intent()
-                .setAction(Intent.ACTION_GET_CONTENT)
-                .setType("image/*"), CODE_IMAGE_GALLERY);
+        showProgressBar();
+        final Dialog imageViewDialog = new Dialog(UserProfile.this);
+        imageViewDialog.setContentView(R.layout.full_screen_image);
+        storageRef.child("ProfilePictures/" + uId + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                hideProgressBar();
+                Glide.with(UserProfile.this).load(uri).into((ImageView) imageViewDialog.findViewById(R.id.full_image_ID));
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                hideProgressBar();
+                Toast.makeText(UserProfile.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        imageViewDialog.show();
     }
 
     @Override
@@ -429,14 +363,10 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
 
         return options;
     }
-    //User profile image end
+//    //User profile image end
 
     //User information load from firebase start
     private void loadUserInformation() {
-
-        // Retrieve data from preference
-        String uId = authOwner.getCurrentUser().getUid();
-        StorageReference storageRef = firebaseStorage.getReference();
         showProgressBar();
         storageRef.child("ProfilePictures/" + uId + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
@@ -444,6 +374,7 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
                 hideProgressBar();
                 Glide.with(UserProfile.this).load(uri).into(profileImage);
                 Glide.with(UserProfile.this).load(uri).into(drawerImage);
+
             }
         });
         SharedPreferences sGetUserInfo = getSharedPreferences(USER_INFO, MODE_PRIVATE);
@@ -456,7 +387,6 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
         //Recycler view start
         recyclerView = findViewById(R.id.recycle_view_user_profile);
         recyclerView.setHasFixedSize(true);
-//        layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         Query docRef = db.collection("DeviceInfo").whereEqualTo("uid", uId);
 
@@ -465,17 +395,11 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
 
                 adddeviceModelList.clear();
+                hideProgressBar();
 
                 for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
                     AddDeviceModel addDeviceModel = document.toObject(AddDeviceModel.class);
-//                        addDeviceModel.setSelectDevice(document.getString("selectDevice"));
                     addDeviceModel.setDocumentId(document.getId());
-//                        addDeviceModel.setDeviceName(document.getString("deviceName"));
-//                        addDeviceModel.setPhoneImeiOne(document.getString("phoneImeiOne"));
-//                        addDeviceModel.setPhoneImeiTwo(document.getString("phoneImeiTwo"));
-//                        addDeviceModel.setMac(document.getString("mac"));
-//                        addDeviceModel.setPurchaseDate(document.getString("purchaseDate"));
-//                        addDeviceModel.setStatus(document.getString("status"));
                     adddeviceModelList.add(addDeviceModel);
                 }
 
@@ -505,19 +429,15 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
             }
         });
     }
+
     //User information load from firebase end
 
     private void editProfile() {
-//        phoneNumberId.setVisibility(View.VISIBLE);
-//        countryCodePicker.setVisibility(View.VISIBLE);
-//        profileSaveButton.setVisibility(View.VISIBLE);
-        editImage.setVisibility(View.VISIBLE);
+
     }
 
 //    private void historyMenu() {
-//        Intent historyIntent = new Intent(UserProfile.this, History.class);
-//        startActivity(historyIntent);
-//        drawerLayout.closeDrawer(GravityCompat.START);
+
 //    }
 
     private void searchMenu() {
@@ -539,12 +459,12 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
 
     @Override
     public void onBackPressed() {
+        startActivity(new Intent(UserProfile.this, UserProfileSearch.class));
         hideProgressBar();
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
-            finishAffinity();
         }
     }
 
@@ -552,126 +472,106 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
         startActivity(new Intent(UserProfile.this, UserProfileSearch.class));
     }
 
-    private void signOutUser() {
-        authOwner.signOut();
-        SharedPreferences sharedPreferencesToken = getSharedPreferences(SIGN_UP_TOKEN, MODE_PRIVATE);
-        SharedPreferences sharedPreferencesDelete = getSharedPreferences(USER_ID, MODE_PRIVATE);
-        SharedPreferences sGetUserInfo = getSharedPreferences(USER_INFO, MODE_PRIVATE);
-        sharedPreferencesDelete.edit().clear().apply();
-        sharedPreferencesToken.edit().clear().apply();
-        sGetUserInfo.edit().clear().apply();
-        finish();
-        Intent signOutIntent = new Intent(UserProfile.this, HomePage.class);
-        startActivity(signOutIntent);
-    }
-
-
     @Override
     public void longPressInterface(int position) {
-//        final AddDeviceModel addDeviceModel = adddeviceModelList.get(position);
-//        Log.d("longPressInterface", "" + adddeviceModelList.size());
-//        Toast.makeText(UserProfile.this, "Long" + adddeviceModelList.get(position), Toast.LENGTH_LONG).show();
-//        AlertDialog.Builder builder = new AlertDialog.Builder(UserProfile.this);
-//        builder.setMessage("Are you sure?")
-//                .setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//
-//                    }
-//                })
-//                .setNegativeButton("Delete", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        db.collection("DeviceInfo").document("" + addDeviceModel.getDocumentId())
-//                                .delete()
-//                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                                    @Override
-//                                    public void onSuccess(Void aVoid) {
-//                                        Toast.makeText(UserProfile.this, "Successfully delete the device info!", Toast.LENGTH_SHORT).show();
-//                                        // Log.d("6897988", "" + adddeviceModelList.get(position).getUid());
-//                                    }
-//                                })
-//                                .addOnFailureListener(new OnFailureListener() {
-//                                    @Override
-//                                    public void onFailure(@NonNull Exception e) {
-//
-//                                    }
-//                                });
-//
-//                    }
-//                });
-//        AlertDialog dialog = builder.create();
-//        dialog.show();
+
 
     }
 
     @Override
     public void onPressInterface(int position) {
         final AddDeviceModel addDeviceModel = adddeviceModelList.get(position);
-        final Dialog dialog1 = new Dialog(this);
+        final Dialog dialog1 = new Dialog(UserProfile.this);
         dialog1.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog1.setContentView(R.layout.edit_delete);
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(dialog1.getWindow().getAttributes());
+        lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        lp.gravity = Gravity.CENTER;
         Button dialogDeleteButton = dialog1.findViewById(R.id.delete_ID);
         Button dialogEditButton = dialog1.findViewById(R.id.edit_ID);
         dialogDeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog1.dismiss();
-                final Dialog dialog = new Dialog(UserProfile.this,R.style.Theme_Dialog);
-                dialog.setContentView(R.layout.delete_dialog);
-                getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
+                //Delete dialog start
+                final Dialog cDelete = new Dialog(UserProfile.this);
+                cDelete.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                cDelete.setContentView(R.layout.delete_dialog);
+                Button cobButton = (Button) cDelete.findViewById(R.id.c_delete_ID);
+                SharedPreferences sGetUserInfo = getSharedPreferences(USER_INFO, MODE_PRIVATE);
+                final String userEmail = sGetUserInfo.getString("Email", "");
+                final String userPass = sGetUserInfo.getString("Password", "");
+                Log.d("userEmail", "" + userPass);
 
-                dialog.setCancelable(false);
-                Button dDeleteButton = dialog.findViewById(R.id.c_delete_ID);
-                Button dcancelButton = dialog.findViewById(R.id.c_cancel_ID);
-                dcancelButton.setOnClickListener(new View.OnClickListener() {
+                cobButton.setOnClickListener(new View.OnClickListener() {
+
                     @Override
                     public void onClick(View v) {
-                        hideProgressBar();
-                        dialog.dismiss();
+                        cDelete.dismiss();
+                        showProgressBar();
+                        String pass = ((EditText) cDelete.findViewById(R.id.delete_con_pass_ID)).getText().toString();
+                        if (pass.isEmpty()) {
+                            hideProgressBar();
+                            AlertDialog.Builder builder1 = new AlertDialog.Builder(UserProfile.this);
+                            builder1.setMessage("Please enter your password.").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            });
+                            builder1.show();
+                            return;
+                        }
+                        if (!pass.equals(userPass)) {
+                            hideProgressBar();
+                            AlertDialog.Builder builder1 = new AlertDialog.Builder(UserProfile.this);
+                            builder1.setMessage("Please enter correct password.").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            });
+                            builder1.show();
+                            return;
+                        }
+                        if (StaticClass.isConnected(UserProfile.this)) {
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            AuthCredential credential = EmailAuthProvider
+                                    .getCredential("" + userEmail, "" + userPass);
+                            user.reauthenticate(credential)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+
+
+                                            db.collection("DeviceInfo").document("" + addDeviceModel.getDocumentId())
+                                                    .delete()
+                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            hideProgressBar();
+                                                            Toast.makeText(UserProfile.this, "Successfully delete device info!", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    })
+                                                    .addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+                                                            hideProgressBar();
+                                                        }
+                                                    });
+                                        }
+                                    });
+                        } else {
+                            StaticClass.buildDialog(UserProfile.this);
+                            hideProgressBar();
+                        }
+
                     }
                 });
-                showProgressBar();
-                dDeleteButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        hideProgressBar();
-                        dialog.dismiss();
-                        db.collection("DeviceInfo").document("" + addDeviceModel.getDocumentId())
-                                .delete()
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        hideProgressBar();
-                                        Toast.makeText(UserProfile.this, "Successfully delete this device info!", Toast.LENGTH_SHORT).show();
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        hideProgressBar();
-                                    }
-                                });
-                    }
-                });
-                dialog.show();
-//                AlertDialog.Builder deletBuilder = new AlertDialog.Builder(UserProfile.this);
-//                deletBuilder.setMessage("Are you sure?")
-//                        .setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//
-//                            }
-//                        })
-//                        .setNegativeButton("Delete", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//
-//
-//                            }
-//                        });
-//                AlertDialog deleteDialog = deletBuilder.create();
-//                deleteDialog.show();
+                cDelete.show();
+//Delete dialog end
             }
         });
         dialogEditButton.setOnClickListener(new View.OnClickListener() {
@@ -686,7 +586,7 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
                 String purchaseDate = addDeviceModel.getPurchaseDate();
                 String status = addDeviceModel.getStatus();
 
-                Intent editInten = new Intent(UserProfile.this, EditActivity.class);
+                Intent editInten = new Intent(UserProfile.this, EditDeviceInformationActivity.class);
                 editInten.putExtra("deviceCatargory", deviceCatargory);
                 editInten.putExtra("deviceName", deviceName);
                 editInten.putExtra("imei1", imei1);
@@ -702,19 +602,20 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
         dialog1.show();
     }
 
-    //For device click
+    private void signOutUser() {
+        authOwner.signOut();
+        SharedPreferences sharedPreferencesToken = getSharedPreferences(SIGN_UP_TOKEN, MODE_PRIVATE);
+        SharedPreferences sharedPreferencesDelete = getSharedPreferences(USER_ID, MODE_PRIVATE);
+        SharedPreferences sGetUserInfo = getSharedPreferences(USER_INFO, MODE_PRIVATE);
+        sharedPreferencesDelete.edit().clear().apply();
+        sharedPreferencesToken.edit().clear().apply();
+        sGetUserInfo.edit().clear().apply();
+        Intent signOutIntent = new Intent(UserProfile.this, HomePage.class);
+        signOutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        finish();
+        startActivity(signOutIntent);
 
-
-//    @Override
-//    public void longPressInterface(int position) {
-//        Log.d("rrrrrrrrrrrrrrr", "" + adddeviceModelList.get(position).getDocumentId());
-//
-//    }
-//
-//    @Override
-//    public void onPressInterface(int position) {
-//        Toast.makeText(UserProfile.this, "Short" + adddeviceModelList.get(position), Toast.LENGTH_LONG).show();
-//    }
+    }
 
     //Progressbar method
     static KProgressHUD kProgressHUD;
@@ -733,4 +634,8 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
             kProgressHUD.dismiss();
     }
 
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        return super.dispatchTouchEvent(ev);
+    }
 }

@@ -107,6 +107,7 @@
                         android:drawableEnd="@drawable/ic_inside_search"
                         android:textAlignment="center"
                         android:maxLength="15"
+                        android:textSize="@dimen/font_size_14"
                         android:textColor="@color/colorPrimaryWhite"
                         android:textColorHint="@color/colorHintText" />
                 <Button

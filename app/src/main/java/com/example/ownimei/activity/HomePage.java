@@ -4,19 +4,24 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.ownimei.R;
 import com.example.ownimei.StaticClass.StaticClass;
 import com.example.ownimei.pojo.AddDeviceModel;
@@ -29,6 +34,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.kaopiz.kprogresshud.KProgressHUD;
 
 public class HomePage extends AppCompatActivity implements View.OnClickListener {
@@ -39,6 +46,7 @@ public class HomePage extends AppCompatActivity implements View.OnClickListener 
     private Button homeSearchButton;
     private FirebaseAuth auth;
     private FirebaseFirestore db;
+    private FirebaseStorage firebaseStorage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +54,7 @@ public class HomePage extends AppCompatActivity implements View.OnClickListener 
         setContentView(R.layout.activity_home_page);
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+        firebaseStorage = FirebaseStorage.getInstance();
 
         signInId = findViewById(R.id.home_sign_in_ID);
         signUpId = findViewById(R.id.home_sign_up_ID);
@@ -58,40 +67,10 @@ public class HomePage extends AppCompatActivity implements View.OnClickListener 
 //        searchId.setOnClickListener(this);
         webID.setOnClickListener(this);
 
-        auth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = auth.getCurrentUser();
         if (firebaseUser != null) {
-            startActivity(new Intent(HomePage.this, UserProfile.class));
+            startActivity(new Intent(HomePage.this, UserProfileSearch.class));
         }
-
-//        //Search Box start
-//
-//        searchId.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//
-//
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                try {
-//                    if (s.toString().length() == 5) {
-//                        String mac = searchId.getText().toString();
-//                        if (!mac.isEmpty()) {
-//                            searchMethod();
-//                        }
-//                    }
-//                } catch (Exception e) {
-//
-//                }
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//
-//            }
-//        });//Search Box end
 
     }
 
@@ -125,7 +104,7 @@ public class HomePage extends AppCompatActivity implements View.OnClickListener 
         String inputImei = searchId.getText().toString();
         if (inputImei.isEmpty()) {
             AlertDialog.Builder builder1 = new AlertDialog.Builder(HomePage.this);
-            builder1.setMessage("Please input IMEI!").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            builder1.setMessage("Please enter your IMEI/MAC id.").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
 
@@ -154,16 +133,32 @@ public class HomePage extends AppCompatActivity implements View.OnClickListener 
                         addDeviceModel.setStatus(document.getString("status"));
                         addDeviceModel.setUid(document.getString("uid"));
 
+
                         final Dialog searchDialog = new Dialog(HomePage.this);
                         searchDialog.setContentView(R.layout.imei_search_result);
                         TextView name = (TextView) searchDialog.findViewById(R.id.show_search_name);
                         name.setText("Owner name: " + addDeviceModel.getUserName());
                         TextView email = (TextView) searchDialog.findViewById(R.id.show_search_email);
                         email.setText("Email: " + addDeviceModel.getUserEmail());
+                        TextView model = (TextView) searchDialog.findViewById(R.id.show_search_device_name);
+                        model.setText("Model: " + addDeviceModel.getDeviceName());
                         TextView imei = (TextView) searchDialog.findViewById(R.id.show_search_imei);
                         imei.setText("IMEI: " + addDeviceModel.getPhoneImeiOne());
                         TextView status = (TextView) searchDialog.findViewById(R.id.show_search_status);
                         status.setText("Status: " + addDeviceModel.getStatus());
+                        if (addDeviceModel.getStatus().equals("Stolen mode")){
+                            ((TextView) searchDialog.findViewById(R.id.show_search_status)).setTextColor(Color.parseColor("#FF5252"));
+                        }else if (addDeviceModel.getStatus().equals("Safe mode")){
+                            ((TextView) searchDialog.findViewById(R.id.show_search_status)).setTextColor(Color.parseColor("#2DC92D"));
+                        }
+                        final ImageView image = searchDialog.findViewById(R.id.show_search_image);
+                        StorageReference storageRef = firebaseStorage.getReference();
+                        storageRef.child("ProfilePictures/" +addDeviceModel.getUid() + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                Glide.with(HomePage.this).load(uri).into(image);
+                            }
+                        });
                         Button dialogButton = (Button) searchDialog.findViewById(R.id.show_search_button);
                         dialogButton.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -196,10 +191,12 @@ public class HomePage extends AppCompatActivity implements View.OnClickListener 
                         hideProgressBar();
                         addDeviceModel.setUserName(document.getString("userName"));
                         addDeviceModel.setUserEmail(document.getString("userEmail"));
-                        addDeviceModel.setPhoneImeiOne(document.getString("phoneImeiTwo"));
+//                        addDeviceModel.setPhoneImeiOne(document.getString("phoneImeiTwo"));
+                        addDeviceModel.setPhoneImeiTwo(document.getString("phoneImeiTwo"));
                         addDeviceModel.setDeviceName(document.getString("deviceName"));
                         addDeviceModel.setStatus(document.getString("status"));
                         addDeviceModel.setUid(document.getString("uid"));
+
 
 
                         final Dialog searchDialog = new Dialog(HomePage.this);
@@ -208,10 +205,25 @@ public class HomePage extends AppCompatActivity implements View.OnClickListener 
                         name.setText("Owner name: " + addDeviceModel.getUserName());
                         TextView email = (TextView) searchDialog.findViewById(R.id.show_search_email);
                         email.setText("Email: " + addDeviceModel.getUserEmail());
+                        TextView model = (TextView) searchDialog.findViewById(R.id.show_search_device_name);
+                        model.setText("Model: " + addDeviceModel.getDeviceName());
                         TextView imei = (TextView) searchDialog.findViewById(R.id.show_search_imei);
                         imei.setText("IMEI: " + addDeviceModel.getPhoneImeiTwo());
                         TextView status = (TextView) searchDialog.findViewById(R.id.show_search_status);
                         status.setText("Status: " + addDeviceModel.getStatus());
+                        if (addDeviceModel.getStatus().equals("Stolen mode")){
+                            ((TextView) searchDialog.findViewById(R.id.show_search_status)).setTextColor(Color.parseColor("#FF5252"));
+                        }else if (addDeviceModel.getStatus().equals("Safe mode")){
+                            ((TextView) searchDialog.findViewById(R.id.show_search_status)).setTextColor(Color.parseColor("#2DC92D"));
+                        }
+                        final ImageView image = searchDialog.findViewById(R.id.show_search_image);
+                        StorageReference storageRef = firebaseStorage.getReference();
+                        storageRef.child("ProfilePictures/" +addDeviceModel.getUid() + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                Glide.with(HomePage.this).load(uri).into(image);
+                            }
+                        });
                         Button dialogButton = (Button) searchDialog.findViewById(R.id.show_search_button);
                         dialogButton.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -249,15 +261,30 @@ public class HomePage extends AppCompatActivity implements View.OnClickListener 
                         addDeviceModel.setUid(document.getString("uid"));
 
                         final Dialog searchDialog = new Dialog(HomePage.this);
-                        searchDialog.setContentView(R.layout.imei_search_result);
+                        searchDialog.setContentView(R.layout.mac_search_result);
                         TextView name = (TextView) searchDialog.findViewById(R.id.show_search_name);
                         name.setText("Owner name: " + addDeviceModel.getUserName());
                         TextView email = (TextView) searchDialog.findViewById(R.id.show_search_email);
                         email.setText("Email: " + addDeviceModel.getUserEmail());
-                        TextView imei = (TextView) searchDialog.findViewById(R.id.show_search_imei);
-                        imei.setText("MAC: " + addDeviceModel.getMac());
+                        TextView model = (TextView) searchDialog.findViewById(R.id.show_search_device_name);
+                        model.setText("Model: " + addDeviceModel.getDeviceName());
+                        TextView mac = (TextView) searchDialog.findViewById(R.id.show_search_mac);
+                        mac.setText("MAC: " + addDeviceModel.getMac());
                         TextView status = (TextView) searchDialog.findViewById(R.id.show_search_status);
                         status.setText("Status: " + addDeviceModel.getStatus());
+                        if (addDeviceModel.getStatus().equals("Stolen mode")){
+                            ((TextView) searchDialog.findViewById(R.id.show_search_status)).setTextColor(Color.parseColor("#FF5252"));
+                        }else if (addDeviceModel.getStatus().equals("Safe mode")){
+                            ((TextView) searchDialog.findViewById(R.id.show_search_status)).setTextColor(Color.parseColor("#2DC92D"));
+                        }
+                        final ImageView image = searchDialog.findViewById(R.id.show_search_image);
+                        StorageReference storageRef = firebaseStorage.getReference();
+                        storageRef.child("ProfilePictures/" +addDeviceModel.getUid() + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                Glide.with(HomePage.this).load(uri).into(image);
+                            }
+                        });
                         Button dialogButton = (Button) searchDialog.findViewById(R.id.show_search_button);
                         dialogButton.setOnClickListener(new View.OnClickListener() {
                             @Override

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/background_image"
     android:orientation="vertical"
-    tools:context=".activity.EditActivity">
+    tools:context=".activity.EditDeviceInformationActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="280dp"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/app_icon"/>
+
+    <TextView
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Does not match any account!"
+        android:gravity="center"
+        />
+    <TextView
+        android:id="@+id/dialog_sign_up"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:text="Please sign up"
+        android:textSize="16sp"
+        android:textColor="@color/com_accountkit_whatsapp_green"
+        android:gravity="center"
+        />
+    <Button
+        android:id="@+id/dialog_ok"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="OK"
+        android:textColor="@color/colorPrimaryWhite"
+        android:background="@drawable/button_border"/>
+
+</LinearLayout>

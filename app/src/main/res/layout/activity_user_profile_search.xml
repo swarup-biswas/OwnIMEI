@@ -9,23 +9,40 @@
     tools:context=".activity.UserProfileSearch">
 
     <RelativeLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="56dp">
 
-        <ImageView
-            android:id="@+id/sign_in_search_back_btn"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_centerVertical="true"
-            android:gravity="center"
-            android:padding="10dp"
-            android:src="@drawable/ic_back_btn" />
+        <!--<ImageView-->
+            <!--android:id="@+id/sign_in_search_back_btn"-->
+            <!--android:layout_width="50dp"-->
+            <!--android:layout_height="50dp"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:gravity="center"-->
+            <!--android:padding="10dp"-->
+            <!--android:src="@drawable/ic_back_btn" />-->
+
+        <LinearLayout
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_alignParentEnd="true"
+            android:orientation="vertical">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/user_profile_search_image_ID"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="2dp"
+                android:layout_marginRight="2dp"
+                android:src="@drawable/ic_pro_pic"
+                app:civ_border_color="@android:color/white"
+                app:civ_border_width="2dp"/>
+        </LinearLayout>
     </RelativeLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@color/colorPrimaryYellow" />
+    <!--<View-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="2dp"-->
+        <!--android:background="@color/colorPrimaryYellow" />-->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -62,21 +79,23 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/search_border"
-                    android:hint="IMEI/MAC Search"
                     android:drawableEnd="@drawable/ic_inside_search"
-                    android:textAlignment="center"
+                    android:hint="IMEI/MAC Search"
                     android:maxLength="15"
+                    android:textAlignment="center"
                     android:textColor="@color/colorPrimaryWhite"
-                    android:textColorHint="@color/colorHintText" />
+                    android:textColorHint="@color/colorHintText"
+                    android:textSize="@dimen/font_size_14" />
+
                 <Button
                     android:id="@+id/user_search_button"
-                    android:layout_marginTop="10dp"
-                    android:layout_gravity="center"
                     android:layout_width="100dp"
                     android:layout_height="50dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/search_border"
                     android:text="search"
-                    android:textColor="@color/colorPrimaryWhite"
-                    android:background="@drawable/search_border"/>
+                    android:textColor="@color/colorPrimaryWhite" />
 
             </LinearLayout>
         </LinearLayout>

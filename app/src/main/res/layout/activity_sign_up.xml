@@ -64,18 +64,18 @@
                 android:layout_height="wrap_content">
 
             <EditText
-                android:layout_marginRight="5dp"
                 android:id="@+id/sign_UP_first_name_ID"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_weight="1"
                 android:layout_height="50dp"
                 android:background="@drawable/card_view_border"
-                android:hint="First name"
+                android:hint="Name"
                 android:textSize="14sp"
                 android:padding="10dp"
                 android:textColorHint="@color/colorHintText"
                 android:textColor="@color/colorLightBlack" />
                 <EditText
+                    android:visibility="gone"
                     android:layout_marginLeft="5dp"
                     android:id="@+id/sign_UP_last_name_ID"
                     android:layout_width="0dp"
@@ -95,6 +95,7 @@
                 android:layout_marginTop="20dp"
                 android:background="@drawable/card_view_border"
                 android:hint="Email"
+                android:maxLines="1"
                 android:textColorHint="@color/colorHintText"
                 android:textSize="14sp"
                 android:padding="10dp"
@@ -137,6 +138,49 @@
                 android:text="Signup"
                 android:textColor="@color/colorPrimaryYellow"
                 android:textSize="18sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/sign_up_forgot_password_ID"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:gravity="end"
+                    android:text="Forgot password?"
+                    android:textColor="@color/colorLightBlack"
+                    android:textSize="14sp" />
+
+                <LinearLayout
+                    android:id="@+id/signUp_signIn_ID"
+                    android:layout_marginTop="15dp"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:text="Already have an account?"
+                        android:textColor="@color/colorLightBlack"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_marginLeft="5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sign in"
+                        android:textSize="@dimen/font_size_16"
+                        android:textColor="@color/colorBlack"/>
+                </LinearLayout>
+            </LinearLayout>
 
         </LinearLayout>
         </android.support.v7.widget.CardView>

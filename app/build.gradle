@@ -5,7 +5,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.example.ownimei"
-        minSdkVersion 18
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
         versionName "1.0.0"
@@ -42,6 +42,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:16.1.0'
     implementation 'com.google.firebase:firebase-firestore:18.1.0'
     implementation 'com.firebaseui:firebase-ui-storage:4.3.1'
+    implementation 'com.google.firebase:firebase-messaging:17.6.0'
     //Squareup
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
@@ -59,6 +60,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:16.0.0'
     //Country code
     implementation 'com.hbb20:ccp:2.2.7'
+    //Account kit
+    implementation 'com.facebook.android:account-kit-sdk:5.+'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

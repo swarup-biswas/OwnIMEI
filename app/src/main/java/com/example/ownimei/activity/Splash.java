@@ -8,6 +8,8 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 
 import com.example.ownimei.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class Splash extends AppCompatActivity {
     private LinearLayout linearLayout;
@@ -21,14 +23,22 @@ public class Splash extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         linearLayout = findViewById(R.id.splash_ID);
 
-        final Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                doWork();
-                startHomePage();
-            }
-        });
-        thread.start();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+
+        FirebaseUser firebaseUser = auth.getCurrentUser();
+        if (firebaseUser != null) {
+            startActivity(new Intent(Splash.this, UserProfileSearch.class));
+            finish();
+        }else {
+            final Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    doWork();
+                    startHomePage();
+                }
+            });
+            thread.start();
+        }
 
     }
 
@@ -41,8 +51,8 @@ public class Splash extends AppCompatActivity {
     }
 
     private void startHomePage() {
-        Intent intent = new Intent(Splash.this, HomePage.class);
-        startActivity(intent);
-        finish();
+            Intent intent = new Intent(Splash.this, HomePage.class);
+            startActivity(intent);
+            finish();
     }
 }

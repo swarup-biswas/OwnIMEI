@@ -1,21 +1,18 @@
 package com.example.ownimei.activity;
 
-import android.app.Activity;
-import android.content.Context;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -26,6 +23,7 @@ import android.widget.Toast;
 import com.example.ownimei.R;
 import com.example.ownimei.StaticClass.StaticClass;
 import com.example.ownimei.pojo.SignUpModel;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -36,15 +34,15 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
 import com.kaopiz.kprogresshud.KProgressHUD;
 
 public class SignIn extends AppCompatActivity implements View.OnClickListener {
+
     private ImageView signInBackBtn;
     private EditText loginEmailID;
     private EditText logInPassID;
     private TextView forgotPassID;
-    private TextView createAccountID;
+    private LinearLayout createAccountID;
     private Button signInLogInBtn;
 
     private FirebaseAuth authSignIn;
@@ -60,6 +58,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
+
 
         authSignIn = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -78,6 +77,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
 
     }
 
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -94,6 +94,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                 Intent createAccountIntent = new Intent(SignIn.this, SignUp.class);
                 startActivity(createAccountIntent);
                 finish();
+
                 break;
             case R.id.sign_in_LOGIN_btn_ID:
                 userSignIn();
@@ -109,21 +110,40 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
     }
 
     private void userSignIn() {
-        final String loginEmail = loginEmailID.getText().toString();
-        final String loginPassword = logInPassID.getText().toString();
+        final String loginEmail = loginEmailID.getText().toString().trim();
+        final String loginPassword = logInPassID.getText().toString().trim();
         if (loginEmail.isEmpty()) {
-            loginEmailID.setError("Email required ");
-            loginEmailID.requestFocus();
+            AlertDialog.Builder builder = new AlertDialog.Builder(SignIn.this);
+            builder.setMessage("Please enter your email address.").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            builder.show();
             return;
         }
         if (!Patterns.EMAIL_ADDRESS.matcher(loginEmail).matches()) {
-            loginEmailID.setError("Please enter a valid email");
-            loginEmailID.requestFocus();
+            AlertDialog.Builder builder1 = new AlertDialog.Builder(SignIn.this);
+            builder1.setMessage("Please enter your valid email address.").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            builder1.show();
             return;
         }
         if (loginPassword.isEmpty()) {
-            logInPassID.setError("Password required");
-            logInPassID.requestFocus();
+            AlertDialog.Builder builder1 = new AlertDialog.Builder(SignIn.this);
+            builder1.setMessage("Please enter your password.").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            builder1.show();
+            return;
         }
         showProgressBar();
         if (!StaticClass.isConnected(SignIn.this)) {
@@ -134,14 +154,12 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
-                        hideProgressBar();
                         if (authSignIn.getCurrentUser().isEmailVerified()) {
-                            hideProgressBar();
+
                             String userID = authSignIn.getUid();
                             SharedPreferences.Editor editor = getSharedPreferences(USER_ID, MODE_PRIVATE).edit();
                             editor.putString("get_UID", "" + userID);
                             editor.apply();
-
                             //Load data start
                             DocumentReference docRef = db.collection("UserInformations").document("" + userID);
                             docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -149,66 +167,96 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                                     SignUpModel userInfo = documentSnapshot.toObject(SignUpModel.class);
                                     if (userInfo != null) {
-                                        Log.d("nnnnnnnn#", "nnnnnn");
                                         String firstName = userInfo.getUserFirstName();
-                                        String lastName = userInfo.getUserLastName();
                                         String emailUser = userInfo.getUserEmail();
-                                        String nameUser = firstName + " " + lastName;
+                                        String phoneUser = userInfo.getUserPhone();
                                         //SharedPreferences name && email
                                         SharedPreferences sharedPreferences = getSharedPreferences(USER_INFO, MODE_PRIVATE);
                                         SharedPreferences.Editor editorUserInfo = sharedPreferences.edit();
-                                        editorUserInfo.putString("Name", nameUser);
+                                        editorUserInfo.putString("Name", firstName);
                                         editorUserInfo.putString("Email", emailUser);
-                                        Log.d("SignInName", nameUser);
+                                        editorUserInfo.putString("Phone", phoneUser);
+                                        editorUserInfo.putString("Password", loginPassword);
                                         editorUserInfo.apply();
-
-//                                        //SignUp success token
-//                                        SharedPreferences.Editor successEditor = getSharedPreferences(SIGN_UP_TOKEN, MODE_PRIVATE).edit();
-//                                        String token = "" + 200;
-//                                        successEditor.putString("get_successToken", token).apply();
-
-                                        Intent signInIntent = new Intent(SignIn.this, UserProfile.class);
-                                        signInIntent.putExtra("User_Name", nameUser);
+                                        hideProgressBar();
+                                        Intent signInIntent = new Intent(SignIn.this, UserProfileSearch.class);
+                                        signInIntent.putExtra("User_Name", firstName);
                                         signInIntent.putExtra("User_Email", emailUser);
-                                        signInIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                                        signInIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                         startActivity(signInIntent);
                                         finish();
                                     } else {
+                                        hideProgressBar();
                                         Log.d("nnnnnnnn#", "else");
                                     }
                                 }
                             });
-                        }else {
+                        } else {
                             hideProgressBar();
                             AlertDialog.Builder builder = new AlertDialog.Builder(SignIn.this);
-                            builder.setMessage("Please verify your email address.");
+                            builder.setMessage("Please verify your email address.\nIf you don't get verification link please resend.");
+                            builder.setCancelable(false);
                             builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-
+                                    authSignIn.signOut();
+                                }
+                            }).setNegativeButton("Resend", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    FirebaseAuth auth = FirebaseAuth.getInstance();
+                                    FirebaseUser user = auth.getCurrentUser();
+                                    user.sendEmailVerification()
+                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()) {
+                                                        Toast.makeText(SignIn.this, "Verification link send", Toast.LENGTH_SHORT).show();
+                                                        Log.d("124234", "Email sent.");
+                                                        authSignIn.signOut();
+                                                    }
+                                                }
+                                            });
                                 }
                             });
                             builder.show();
+
                         }
                     } else {
                         hideProgressBar();
-                        AlertDialog.Builder builder = new AlertDialog.Builder(SignIn.this);
-                        builder.setMessage("" + task.getException().getMessage());
-                        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        final Dialog dialog = new Dialog(SignIn.this);
+                        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                        dialog.setContentView(R.layout.signin_dialog_for_not_signup_user);
+                        TextView signUpDialog = dialog.findViewById(R.id.dialog_sign_up);
+                        Button  buttonDialog = dialog.findViewById(R.id.dialog_ok);
+                        signUpDialog.setOnClickListener(new View.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
+                            public void onClick(View v) {
+                                startActivity(new Intent(SignIn.this,SignUp.class));
+                                dialog.dismiss();
                             }
                         });
-                        builder.show();
+                        buttonDialog.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                            }
+                        });
+                        dialog.show();
                     }
                 }
 
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    hideProgressBar();
+                }
             });
 
         }
 
     }
+
 
     //Progressbar method
     static KProgressHUD kProgressHUD;

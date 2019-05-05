@@ -23,8 +23,10 @@ import android.widget.Toast;
 import com.example.ownimei.R;
 import com.example.ownimei.StaticClass.StaticClass;
 import com.example.ownimei.pojo.AddDeviceModel;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -37,6 +39,7 @@ import com.kaopiz.kprogresshud.KProgressHUD;
 import java.util.Calendar;
 
 import static com.example.ownimei.activity.SignIn.SIGN_UP_TOKEN;
+import static com.example.ownimei.activity.SignIn.USER_ID;
 import static com.example.ownimei.activity.SignIn.USER_INFO;
 
 public class AddDevice extends AppCompatActivity implements View.OnClickListener {
@@ -69,6 +72,9 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
     private String matchMac;
 
 
+    private String phone;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,10 +100,10 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
 
         deviceSelect.setOnClickListener(this);
         addDeviceBackButton.setOnClickListener(this);
-//        addDeviceButton.setOnClickListener(this);
+        addDeviceButton.setOnClickListener(this);
         addDevicePurchaseDate.setOnClickListener(this);
         addDeviceMode.setOnClickListener(this);
-        //Query start
+       // Query start
         addDeviceIMEIOne.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -156,7 +162,7 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 try {
                     //TODO handle the mac search
-                    if (s.toString().length() == 5) {
+                    if (s.toString().length() == 10) {
                         String mac = addDeviceMAC.getText().toString();
                         if (!mac.isEmpty()) {
                             queryMacMethod();
@@ -200,6 +206,23 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
         addDeviceBackButtonMethod();
     }
 
+    private void addDeviceBackButtonMethod() {
+//        SharedPreferences successSharedPreferences = getSharedPreferences(SIGN_UP_TOKEN, MODE_PRIVATE);
+//        String successTokenFinal = successSharedPreferences.getString("get_successToken", "No token found");
+//        Log.d("SuccessToken", "" + successTokenFinal);
+//        if (successTokenFinal.equals("" + 200)) {
+//            Log.d("SuccessToken", "" + successTokenFinal);
+//            Toast.makeText(AddDevice.this, "Sign in please!", Toast.LENGTH_SHORT).show();
+//            Intent intent1 = new Intent(AddDevice.this, SignIn.class);
+//            startActivity(intent1);
+//            finish();
+//        } else if (authAdd.getCurrentUser().getUid().equals(authAdd.getCurrentUser().getUid())) {
+        Intent intent2 = new Intent(AddDevice.this, UserProfile.class);
+        startActivity(intent2);
+        finish();
+//        }
+    }
+
     //Date picker
     private void deviceDatePicker() {
         Calendar calendarToday = Calendar.getInstance();
@@ -214,23 +237,6 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
         }, year, month, day);
         datePickerDialog.getDatePicker().setMaxDate(calendarToday.getTimeInMillis());
         datePickerDialog.show();
-    }
-
-    private void addDeviceBackButtonMethod() {
-        SharedPreferences successSharedPreferences = getSharedPreferences(SIGN_UP_TOKEN, MODE_PRIVATE);
-        String successTokenFinal = successSharedPreferences.getString("get_successToken", "No token found");
-        Log.d("SuccessToken", "" + successTokenFinal);
-        if (successTokenFinal.equals("" + 200)) {
-            Log.d("SuccessToken", "" + successTokenFinal);
-            Toast.makeText(AddDevice.this, "Sign in please!", Toast.LENGTH_SHORT).show();
-            Intent intent1 = new Intent(AddDevice.this, SignIn.class);
-            startActivity(intent1);
-            finish();
-        } else if (authAdd.getCurrentUser().getUid().equals(authAdd.getCurrentUser().getUid())) {
-            Intent intent2 = new Intent(AddDevice.this, UserProfile.class);
-            startActivity(intent2);
-            finish();
-        }
     }
 
     //Device select dialog block start
@@ -326,189 +332,18 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
 
     }
 
-    private void queryMacMethod() {
-        String mac1 = addDeviceMAC.getText().toString();
-        if (!mac1.isEmpty()) {
-            Query queryMac = db.collection("DeviceInfo").whereEqualTo("mac", mac1);
-            queryMac.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                @Override
-                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        AddDeviceModel addDeviceModel = new AddDeviceModel();
-                        if (document.getString("mac") != null) {
-                            addDeviceModel.setMac(document.getString("mac"));
-                            Log.d("matchIMEiOneForTwo", "" + matchIMEiOneForTwo);
-                            AlertDialog.Builder builderOne = new AlertDialog.Builder(AddDevice.this);
-                            builderOne.setMessage("Opps! this IMEI already exist. Please input your correct IMEI.").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    AddDeviceModel addDeviceModel = new AddDeviceModel();
-                                    addDeviceMAC.getText().clear();
-                                    matchMac = addDeviceModel.getMac();
-                                    Log.d("addDeviceMAC@@@@@@", "" + addDeviceMAC);
-                                }
-                            });
-                            AlertDialog dialogOne = builderOne.create();
-//                            dialogOne.setCanceledOnTouchOutside(false);
-                            dialogOne.setCancelable(false);
-                            dialogOne.show();
-                        }
-                    }
-                }
-
-            });
-        }
-    }
-
-    private void queryOneImeiMethod() {
-        String im1 = addDeviceIMEIOne.getText().toString();
-
-        //IMEI one query
-        if (!im1.isEmpty()) {
-            Query queryImeiOne = db.collection("DeviceInfo").whereEqualTo("phoneImeiOne", im1);
-            queryImeiOne.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                @Override
-                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        AddDeviceModel addDeviceModel = new AddDeviceModel();
-                        if (document.getString("phoneImeiOne") != null) {
-                            addDeviceModel.setPhoneImeiOne(document.getString("phoneImeiOne"));
-                            matchIMEiOneForTwo = addDeviceModel.getPhoneImeiOne();
-                            Log.d("matchIMEiOneForTwo", "" + matchIMEiOneForTwo);
-                            AlertDialog.Builder builderOne = new AlertDialog.Builder(AddDevice.this);
-                            builderOne.setMessage("Opps! this IMEI already exist. Please input your correct IMEI.").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    AddDeviceModel addDeviceModel = new AddDeviceModel();
-                                    addDeviceIMEIOne.getText().clear();
-                                    matchIMEiOne = addDeviceModel.getPhoneImeiOne();
-                                    Log.d("Clear@@@@@@", "" + matchIMEiOne);
-                                }
-                            });
-                            AlertDialog dialogOne = builderOne.create();
-                            dialogOne.setCancelable(false);
-                            dialogOne.show();
-                        }
-                    }
-                }
-
-            });
-
-            //IMEI two
-            if (matchIMEiOneForTwo == null) {
-                Query queryImeiTwo = db.collection("DeviceInfo").whereEqualTo("phoneImeiTwo", im1);
-                queryImeiTwo.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-
-                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                            AddDeviceModel addDeviceModel = new AddDeviceModel();
-                            if (document.getString("phoneImeiTwo") != null) {
-                                addDeviceModel.setPhoneImeiOne(document.getString("phoneImeiTwo"));
-                                AlertDialog.Builder builderOne = new AlertDialog.Builder(AddDevice.this);
-                                builderOne.setMessage("Opps! this IMEI already exist. Please input your correct IMEI.").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        AddDeviceModel addDeviceModel = new AddDeviceModel();
-                                        addDeviceIMEIOne.getText().clear();
-                                        matchIMEiOne = addDeviceModel.getPhoneImeiOne();
-                                    }
-                                });
-                                AlertDialog dialogOne = builderOne.create();
-                                dialogOne.setCancelable(false);
-                                dialogOne.show();
-                            }
-                        }
-                    }
-
-                });
-            }
-        }
-    }
-
-    private void queryTwoImeiMethod() {
-        String im2 = addDeviceIMEITwo.getText().toString();
-        //IMEI one query
-        if (!im2.isEmpty()) {
-            Query queryImeiOne = db.collection("DeviceInfo").whereEqualTo("phoneImeiOne", im2);
-            queryImeiOne.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                @Override
-                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        AddDeviceModel addDeviceModel = new AddDeviceModel();
-                        if (document.getString("phoneImeiOne") != null) {
-                            addDeviceModel.setPhoneImeiTwo(document.getString("phoneImeiOne"));
-                            matchIMEiTwoForOne = addDeviceModel.getPhoneImeiTwo();
-                            Log.d("matchIMEiOneForTwo", "" + matchIMEiTwoForOne);
-                            AlertDialog.Builder builderOne = new AlertDialog.Builder(AddDevice.this);
-                            builderOne.setMessage("Opps! this IMEI already exist. Please input your correct IMEI.").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    AddDeviceModel addDeviceModel = new AddDeviceModel();
-                                    addDeviceIMEITwo.getText().clear();
-                                    matchIMEiTwo = addDeviceModel.getPhoneImeiTwo();
-                                }
-                            });
-                            AlertDialog dialogOne = builderOne.create();
-                            dialogOne.setCancelable(false);
-                            dialogOne.show();
-                        }
-                    }
-                }
-
-            });
-            //IMEI two
-            if (matchIMEiTwoForOne == null) {
-                Query queryImeiTwo = db.collection("DeviceInfo").whereEqualTo("phoneImeiTwo", im2);
-                queryImeiTwo.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-
-                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                            AddDeviceModel addDeviceModel = new AddDeviceModel();
-                            if (document.getString("phoneImeiTwo") != null) {
-                                addDeviceModel.setPhoneImeiOne(document.getString("phoneImeiTwo"));
-                                AlertDialog.Builder builderOne = new AlertDialog.Builder(AddDevice.this);
-                                builderOne.setMessage("Opps! this IMEI already exist. Please input your correct IMEI.").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        AddDeviceModel addDeviceModel = new AddDeviceModel();
-                                        addDeviceIMEITwo.getText().clear();
-                                        matchIMEiTwo = addDeviceModel.getPhoneImeiTwo();
-                                        Log.d("Clear2@@@@@@", "" + matchIMEiTwo);
-                                    }
-                                });
-                                AlertDialog dialogOne = builderOne.create();
-                                dialogOne.setCancelable(false);
-                                dialogOne.show();
-                            }
-                        }
-                    }
-
-                });
-            }
-        }
-    }
-
     private void phone() {
 
         //Button Save device information
-
         addDeviceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showProgressBar();
+
                 if (!StaticClass.isConnected(AddDevice.this)) {
                     StaticClass.buildDialog(AddDevice.this).show();
-                    onBackPressed();
                     hideProgressBar();
                 } else {
-                    //Clear success token preference
-                    SharedPreferences clearSharedPreferences = getSharedPreferences(SIGN_UP_TOKEN, MODE_PRIVATE);
-                    clearSharedPreferences.edit().clear().apply();
 
                     String name = deviceSelect.getText().toString();
                     String model = addDeviceName.getText().toString();
@@ -517,7 +352,6 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
                     String date = addDevicePurchaseDate.getText().toString();
                     String mac = addDeviceMAC.getText().toString();
                     String status = addDeviceMode.getText().toString();
-
                     if (model.isEmpty()) {
                         hideProgressBar();
                         AlertDialog.Builder builder = new AlertDialog.Builder(AddDevice.this);
@@ -618,17 +452,6 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
                         builder.show();
                         return;
                     }
-                    if (status == null) {
-                        hideProgressBar();
-                        AlertDialog.Builder builder = new AlertDialog.Builder(AddDevice.this);
-                        builder.setMessage("Please select device status").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        });
-                        builder.show();
-                        return;
-                    }
                     if (status.isEmpty()) {
                         hideProgressBar();
                         AlertDialog.Builder builder = new AlertDialog.Builder(AddDevice.this);
@@ -640,32 +463,16 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
                         builder.show();
                         return;
                     }
-
-
-                    //TODO fix date problem
-//                String cDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
-//                if (Integer.parseInt(date)>Integer.parseInt(cDate)){
-//                    AlertDialog.Builder builder = new AlertDialog.Builder(AddDevice.this);
-//                    builder.setMessage("Please enter valid date").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//
-//                        }
-//                    });
-//                    builder.show();
-//                    return;
-//                }
-
-
+                    Log.d("AddDevice12", "IMEI 1 : " + matchIMEiOne);
+                    showProgressBar();
                     if (matchIMEiOne == null && matchIMEiTwo == null && matchMac == null) {
                         SharedPreferences sGetUserInfo = getSharedPreferences(USER_INFO, MODE_PRIVATE);
                         String userName = sGetUserInfo.getString("Name", "");
                         String userEmail = sGetUserInfo.getString("Email", "");
-                        String userId = authAdd.getCurrentUser().getUid();
-                        if (userName != null && userEmail != null) {
-
-                        }
-                        AddDeviceModel deviceInfo = new AddDeviceModel(userName, userEmail, userId, name, model, IMEI1, IMEI2, mac, date, status);
+                        SharedPreferences sGetUID = getSharedPreferences(USER_ID, MODE_PRIVATE);
+                        String userId = sGetUID.getString("get_UID", "");
+                        //Adding data to fire store
+                        AddDeviceModel deviceInfo = new AddDeviceModel(userName, userEmail, userId, name, model, IMEI1, IMEI2, mac, date, status, phone);
                         collectionReference.add(deviceInfo).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {
@@ -692,6 +499,254 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
 
 
     }
+
+    //Query start
+
+    //Query IMEI 1 start
+    private void queryOneImeiMethod() {
+        String im1 = addDeviceIMEIOne.getText().toString();
+        showProgressBar();
+        //IMEI one query
+        if (!im1.isEmpty()) {
+            Query queryImeiOne = db.collection("DeviceInfo").whereEqualTo("phoneImeiOne", im1);
+            queryImeiOne.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                @Override
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        AddDeviceModel addDeviceModel = new AddDeviceModel();
+                        if (document.getString("phoneImeiOne") != null) {
+                            hideProgressBar();
+                            addDeviceModel.setPhoneImeiOne(document.getString("phoneImeiOne"));
+                            matchIMEiOneForTwo = addDeviceModel.getPhoneImeiOne();
+                            Log.d("matchIMEiOneForTwo", "" + matchIMEiOneForTwo);
+                            AlertDialog.Builder builderOne = new AlertDialog.Builder(AddDevice.this);
+                            builderOne.setMessage("Opps! this IMEI already exist. Please input your correct IMEI.").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    AddDeviceModel addDeviceModel = new AddDeviceModel();
+                                    addDeviceIMEIOne.getText().clear();
+                                    matchIMEiOne = addDeviceModel.getPhoneImeiOne();
+                                    Log.d("Clear@@@@@@", "" + matchIMEiOne);
+                                }
+                            });
+                            AlertDialog dialogOne = builderOne.create();
+                            dialogOne.setCancelable(false);
+                            dialogOne.show();
+                        }else {
+                            hideProgressBar();
+                        }
+                    }
+                }
+
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    hideProgressBar();
+                    Toast.makeText(AddDevice.this,""+e.getMessage(),Toast.LENGTH_LONG).show();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    hideProgressBar();
+                }
+            });
+
+            //IMEI two
+            if (matchIMEiOneForTwo == null) {
+                Query queryImeiTwo = db.collection("DeviceInfo").whereEqualTo("phoneImeiTwo", im1);
+                queryImeiTwo.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            AddDeviceModel addDeviceModel = new AddDeviceModel();
+                            if (document.getString("phoneImeiTwo") != null) {
+                                hideProgressBar();
+                                addDeviceModel.setPhoneImeiOne(document.getString("phoneImeiTwo"));
+                                AlertDialog.Builder builderOne = new AlertDialog.Builder(AddDevice.this);
+                                builderOne.setMessage("Opps! this IMEI already exist. Please enter your correct IMEI.").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        AddDeviceModel addDeviceModel = new AddDeviceModel();
+                                        addDeviceIMEIOne.getText().clear();
+                                        matchIMEiOne = addDeviceModel.getPhoneImeiOne();
+                                    }
+                                });
+                                AlertDialog dialogOne = builderOne.create();
+                                dialogOne.setCancelable(false);
+                                dialogOne.show();
+                            }else {
+                                hideProgressBar();
+                            }
+                        }
+                    }
+
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        hideProgressBar();
+                        Toast.makeText(AddDevice.this,""+e.getMessage(),Toast.LENGTH_LONG).show();
+                    }
+                }).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        hideProgressBar();
+                    }
+                });
+            }
+        }
+    }
+    //Query IMEI 1 end
+
+    //Query IMEI 2 start
+    private void queryTwoImeiMethod() {
+        showProgressBar();
+        String im2 = addDeviceIMEITwo.getText().toString();
+        //IMEI one query
+        if (!im2.isEmpty()) {
+            Query queryImeiOne = db.collection("DeviceInfo").whereEqualTo("phoneImeiOne", im2);
+            queryImeiOne.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                @Override
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        AddDeviceModel addDeviceModel = new AddDeviceModel();
+                        if (document.getString("phoneImeiOne") != null) {
+                            hideProgressBar();
+                            addDeviceModel.setPhoneImeiTwo(document.getString("phoneImeiOne"));
+                            matchIMEiTwoForOne = addDeviceModel.getPhoneImeiTwo();
+                            Log.d("matchIMEiOneForTwo", "" + matchIMEiTwoForOne);
+                            AlertDialog.Builder builderOne = new AlertDialog.Builder(AddDevice.this);
+                            builderOne.setMessage("Opps! this IMEI already exist. Please enter your correct IMEI.").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    AddDeviceModel addDeviceModel = new AddDeviceModel();
+                                    addDeviceIMEITwo.getText().clear();
+                                    matchIMEiTwo = addDeviceModel.getPhoneImeiTwo();
+                                }
+                            });
+                            AlertDialog dialogOne = builderOne.create();
+                            dialogOne.setCancelable(false);
+                            dialogOne.show();
+                        }else {
+                            hideProgressBar();
+                        }
+                    }
+                }
+
+            }).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    hideProgressBar();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    hideProgressBar();
+                    Toast.makeText(AddDevice.this,""+e.getMessage(),Toast.LENGTH_LONG).show();
+                }
+            });
+            //IMEI two
+            if (matchIMEiTwoForOne == null) {
+                Query queryImeiTwo = db.collection("DeviceInfo").whereEqualTo("phoneImeiTwo", im2);
+                queryImeiTwo.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            AddDeviceModel addDeviceModel = new AddDeviceModel();
+                            if (document.getString("phoneImeiTwo") != null) {
+                                hideProgressBar();
+                                addDeviceModel.setPhoneImeiOne(document.getString("phoneImeiTwo"));
+                                AlertDialog.Builder builderOne = new AlertDialog.Builder(AddDevice.this);
+                                builderOne.setMessage("Opps! this IMEI already exist. Please enter your correct IMEI.").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        AddDeviceModel addDeviceModel = new AddDeviceModel();
+                                        addDeviceIMEITwo.getText().clear();
+                                        matchIMEiTwo = addDeviceModel.getPhoneImeiTwo();
+                                        Log.d("Clear2@@@@@@", "" + matchIMEiTwo);
+                                    }
+                                });
+                                AlertDialog dialogOne = builderOne.create();
+                                dialogOne.setCancelable(false);
+                                dialogOne.show();
+                            }else {
+                                hideProgressBar();
+                            }
+                        }
+                    }
+
+                }).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        hideProgressBar();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        hideProgressBar();
+                        Toast.makeText(AddDevice.this,""+e.getMessage(),Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        }
+    }
+    //Query IMEI 2 end
+
+    //Query MAC start
+    private void queryMacMethod() {
+        showProgressBar();
+        String mac1 = addDeviceMAC.getText().toString();
+        if (!mac1.isEmpty()) {
+            Query queryMac = db.collection("DeviceInfo").whereEqualTo("mac", mac1);
+            queryMac.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                @Override
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        AddDeviceModel addDeviceModel = new AddDeviceModel();
+                        if (document.getString("mac") != null) {
+                            hideProgressBar();
+                            addDeviceModel.setMac(document.getString("mac"));
+                            Log.d("matchIMEiOneForTwo", "" + matchIMEiOneForTwo);
+                            AlertDialog.Builder builderOne = new AlertDialog.Builder(AddDevice.this);
+                            builderOne.setMessage("Opps! this IMEI already exist. Please input your correct IMEI.").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    AddDeviceModel addDeviceModel = new AddDeviceModel();
+                                    addDeviceMAC.getText().clear();
+                                    matchMac = addDeviceModel.getMac();
+                                    Log.d("addDeviceMAC@@@@@@", "" + addDeviceMAC);
+                                }
+                            });
+                            AlertDialog dialogOne = builderOne.create();
+//                            dialogOne.setCanceledOnTouchOutside(false);
+                            dialogOne.setCancelable(false);
+                            dialogOne.show();
+                        }else {
+                            hideProgressBar();
+                        }
+                    }
+                }
+
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    hideProgressBar();
+                    Toast.makeText(AddDevice.this,""+e.getMessage(),Toast.LENGTH_LONG).show();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    hideProgressBar();
+                }
+            });
+        }
+    }
+    //Query MAC end
+    //Query end
 
     //Progressbar method
     static KProgressHUD kProgressHUD;

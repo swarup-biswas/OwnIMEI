@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".activity.UserProfile">
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -62,6 +63,13 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:background="@color/colorPrimaryYellow" />
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -89,20 +97,20 @@
                                 android:layout_width="120dp"
                                 android:layout_height="120dp"
                                 android:layout_centerInParent="true"
-                                android:src="@drawable/app_icon"
+                                android:src="@drawable/ic_pro_pic"
                                 app:civ_border_color="@android:color/white"
                                 app:civ_border_width="2dp" />
 
-                            <ImageView
-                                android:id="@+id/user_profile_edit_image_ic_ID"
-                                android:layout_width="50dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="30dp"
-                                android:layout_toRightOf="@+id/user_profile_image_ID"
-                                android:paddingTop="25dp"
-                                android:paddingRight="20dp"
-                                android:src="@drawable/ic_edit_image"
-                                android:visibility="gone" />
+                            <!--<ImageView-->
+                            <!--android:id="@+id/user_profile_edit_image_ic_ID"-->
+                            <!--android:layout_width="50dp"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_marginTop="30dp"-->
+                            <!--android:layout_toRightOf="@+id/user_profile_image_ID"-->
+                            <!--android:paddingTop="25dp"-->
+                            <!--android:paddingRight="20dp"-->
+                            <!--android:src="@drawable/ic_edit_image"-->
+                            <!--android:visibility="gone" />-->
                         </RelativeLayout>
 
                         <LinearLayout
@@ -160,12 +168,32 @@
                 </RelativeLayout>
 
             </LinearLayout>
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/recycle_view_user_profile"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="10dp"></android.support.v7.widget.RecyclerView>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycle_view_user_profile"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="10dp"></android.support.v7.widget.RecyclerView>
         </LinearLayout>
+        </ScrollView>
+
+    </LinearLayout>
+
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/add_floating_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_add"
+            app:backgroundTint="@color/colorActionBar"
+            app:fabSize="normal" />
+
+    </android.support.design.widget.CoordinatorLayout>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"

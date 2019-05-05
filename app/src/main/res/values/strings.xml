@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">OwnIMEI</string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -7,6 +6,16 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+    <string name="verification_link_message">Look for the verification email in your inbox and click the link in that email for verification.</string>
+    <string name="email_not_match_message">Dose not match any account.</string>
+
+
+    <string name="app_name">OwnIMEI</string>
+    <string name="FACEBOOK_APP_ID">2204108369665876</string>
+    <string name="ACCOUNT_KIT_CLIENT_TOKEN">8046db5edfa1b15756ec0fcf1f13b8d5</string>
+
+
+
 
     <string-array name="statusList">
         <item>Safe mode</item>

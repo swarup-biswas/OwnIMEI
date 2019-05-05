@@ -2,11 +2,20 @@ package com.example.ownimei.activity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.net.Uri;
+import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -15,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.ownimei.R;
 import com.example.ownimei.StaticClass.StaticClass;
 import com.example.ownimei.pojo.AddDeviceModel;
@@ -32,32 +42,72 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.kaopiz.kprogresshud.KProgressHUD;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.example.ownimei.activity.SignUp.USER_ID;
+
 public class UserProfileSearch extends AppCompatActivity implements View.OnClickListener {
-    private FirebaseFirestore db;
-    private ImageView backButton;
+    //    private ImageView backButton;
     private EditText userSearch;
     private Button userSearchButton;
+    private CircleImageView circleImageView;
+    private FirebaseAuth authOwner;
+    private FirebaseFirestore db;
+    private FirebaseStorage firebaseStorage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile_search);
+        authOwner = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+        firebaseStorage = FirebaseStorage.getInstance();
         userSearch = findViewById(R.id.user_search_ID);
-        backButton = findViewById(R.id.sign_in_search_back_btn);
+//        backButton = findViewById(R.id.sign_in_search_back_btn);
         userSearchButton = findViewById(R.id.user_search_button);
-        backButton.setOnClickListener(this);
+        circleImageView = findViewById(R.id.user_profile_search_image_ID);
+//        backButton.setOnClickListener(this);
         userSearchButton.setOnClickListener(this);
+        circleImageView.setOnClickListener(this);
+        if (!StaticClass.isConnected(UserProfileSearch.this)) {
+            StaticClass.buildDialog(UserProfileSearch.this);
+        } else {
+            loadImage();
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("MyNotifications", "MyNotifications", NotificationManager.IMPORTANCE_DEFAULT);
+
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
+
+    }
+
+    private void loadImage() {
+        SharedPreferences sharedUId = getSharedPreferences(USER_ID, MODE_PRIVATE);
+        String uId = sharedUId.getString("get_UID", "");
+        StorageReference storageRef = firebaseStorage.getReference();
+        storageRef.child("ProfilePictures/" + uId + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                hideProgressBar();
+                Glide.with(UserProfileSearch.this).load(uri).into(circleImageView);
+            }
+        });
     }
 
     //On Click Listener
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.sign_in_search_back_btn:
-                backButtonSearch();
+//            case R.id.sign_in_search_back_btn:
+//                backButtonSearch();
+//                break;
+            case R.id.user_profile_search_image_ID:
+                startActivity(new Intent(UserProfileSearch.this, UserProfile.class));
                 break;
             case R.id.user_search_button:
                 searchIMEI();
@@ -104,10 +154,26 @@ public class UserProfileSearch extends AppCompatActivity implements View.OnClick
                         name.setText("Owner name: " + addDeviceModel.getUserName());
                         TextView email = (TextView) searchDialog.findViewById(R.id.show_search_email);
                         email.setText("Email: " + addDeviceModel.getUserEmail());
+                        TextView model = (TextView) searchDialog.findViewById(R.id.show_search_device_name);
+                        model.setText("Model: " + addDeviceModel.getDeviceName());
                         TextView imei = (TextView) searchDialog.findViewById(R.id.show_search_imei);
                         imei.setText("IMEI: " + addDeviceModel.getPhoneImeiOne());
                         TextView status = (TextView) searchDialog.findViewById(R.id.show_search_status);
                         status.setText("Status: " + addDeviceModel.getStatus());
+                        if (addDeviceModel.getStatus().equals("Stolen mode")) {
+                            ((TextView) searchDialog.findViewById(R.id.show_search_status)).setTextColor(Color.parseColor("#FF5252"));
+                        } else if (addDeviceModel.getStatus().equals("Safe mode")) {
+                            ((TextView) searchDialog.findViewById(R.id.show_search_status)).setTextColor(Color.parseColor("#2DC92D"));
+                        }
+                        final ImageView image = searchDialog.findViewById(R.id.show_search_image);
+                        StorageReference storageRef = firebaseStorage.getReference();
+                        storageRef.child("ProfilePictures/" + addDeviceModel.getUid() + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                Glide.with(UserProfileSearch.this).load(uri).into(image);
+                            }
+                        });
+
                         Button dialogButton = (Button) searchDialog.findViewById(R.id.show_search_button);
                         dialogButton.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -118,9 +184,6 @@ public class UserProfileSearch extends AppCompatActivity implements View.OnClick
                         });
                         searchDialog.show();
                     }
-                } else {
-                    hideProgressBar();
-                    Toast.makeText(UserProfileSearch.this, "else", Toast.LENGTH_LONG).show();
                 }
 
             }
@@ -140,7 +203,8 @@ public class UserProfileSearch extends AppCompatActivity implements View.OnClick
                         hideProgressBar();
                         addDeviceModel.setUserName(document.getString("userName"));
                         addDeviceModel.setUserEmail(document.getString("userEmail"));
-                        addDeviceModel.setPhoneImeiOne(document.getString("phoneImeiTwo"));
+//                        addDeviceModel.setPhoneImeiOne(document.getString("phoneImeiTwo"));
+                        addDeviceModel.setPhoneImeiTwo(document.getString("phoneImeiTwo"));
                         addDeviceModel.setDeviceName(document.getString("deviceName"));
                         addDeviceModel.setStatus(document.getString("status"));
                         addDeviceModel.setUid(document.getString("uid"));
@@ -152,10 +216,25 @@ public class UserProfileSearch extends AppCompatActivity implements View.OnClick
                         name.setText("Owner name: " + addDeviceModel.getUserName());
                         TextView email = (TextView) searchDialog.findViewById(R.id.show_search_email);
                         email.setText("Email: " + addDeviceModel.getUserEmail());
+                        TextView model = (TextView) searchDialog.findViewById(R.id.show_search_device_name);
+                        model.setText("Model: " + addDeviceModel.getDeviceName());
                         TextView imei = (TextView) searchDialog.findViewById(R.id.show_search_imei);
                         imei.setText("IMEI: " + addDeviceModel.getPhoneImeiTwo());
                         TextView status = (TextView) searchDialog.findViewById(R.id.show_search_status);
                         status.setText("Status: " + addDeviceModel.getStatus());
+                        if (addDeviceModel.getStatus().equals("Stolen mode")) {
+                            ((TextView) searchDialog.findViewById(R.id.show_search_status)).setTextColor(Color.parseColor("#FF5252"));
+                        } else if (addDeviceModel.getStatus().equals("Safe mode")) {
+                            ((TextView) searchDialog.findViewById(R.id.show_search_status)).setTextColor(Color.parseColor("#2DC92D"));
+                        }
+                        final ImageView image = searchDialog.findViewById(R.id.show_search_image);
+                        StorageReference storageRef = firebaseStorage.getReference();
+                        storageRef.child("ProfilePictures/" + addDeviceModel.getUid() + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                Glide.with(UserProfileSearch.this).load(uri).into(image);
+                            }
+                        });
                         Button dialogButton = (Button) searchDialog.findViewById(R.id.show_search_button);
                         dialogButton.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -166,9 +245,6 @@ public class UserProfileSearch extends AppCompatActivity implements View.OnClick
                         });
                         searchDialog.show();
                     }
-                } else {
-                    hideProgressBar();
-                    Toast.makeText(UserProfileSearch.this, "else", Toast.LENGTH_LONG).show();
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -193,15 +269,30 @@ public class UserProfileSearch extends AppCompatActivity implements View.OnClick
                         addDeviceModel.setUid(document.getString("uid"));
 
                         final Dialog searchDialog = new Dialog(UserProfileSearch.this);
-                        searchDialog.setContentView(R.layout.imei_search_result);
+                        searchDialog.setContentView(R.layout.mac_search_result);
                         TextView name = (TextView) searchDialog.findViewById(R.id.show_search_name);
                         name.setText("Owner name: " + addDeviceModel.getUserName());
                         TextView email = (TextView) searchDialog.findViewById(R.id.show_search_email);
                         email.setText("Email: " + addDeviceModel.getUserEmail());
-                        TextView imei = (TextView) searchDialog.findViewById(R.id.show_search_imei);
-                        imei.setText("MAC: " + addDeviceModel.getMac());
+                        TextView model = (TextView) searchDialog.findViewById(R.id.show_search_device_name);
+                        model.setText("Model: " + addDeviceModel.getDeviceName());
+                        TextView mac = (TextView) searchDialog.findViewById(R.id.show_search_mac);
+                        mac.setText("MAC: " + addDeviceModel.getMac());
                         TextView status = (TextView) searchDialog.findViewById(R.id.show_search_status);
                         status.setText("Status: " + addDeviceModel.getStatus());
+                        if (addDeviceModel.getStatus().equals("Stolen mode")) {
+                            ((TextView) searchDialog.findViewById(R.id.show_search_status)).setTextColor(Color.parseColor("#FF5252"));
+                        } else if (addDeviceModel.getStatus().equals("Safe mode")) {
+                            ((TextView) searchDialog.findViewById(R.id.show_search_status)).setTextColor(Color.parseColor("#2DC92D"));
+                        }
+                        final ImageView image = searchDialog.findViewById(R.id.show_search_image);
+                        StorageReference storageRef = firebaseStorage.getReference();
+                        storageRef.child("ProfilePictures/" + addDeviceModel.getUid() + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                Glide.with(UserProfileSearch.this).load(uri).into(image);
+                            }
+                        });
                         Button dialogButton = (Button) searchDialog.findViewById(R.id.show_search_button);
                         dialogButton.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -212,9 +303,6 @@ public class UserProfileSearch extends AppCompatActivity implements View.OnClick
                         });
                         searchDialog.show();
                     }
-                } else {
-                    hideProgressBar();
-                    Toast.makeText(UserProfileSearch.this, "else", Toast.LENGTH_LONG).show();
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -226,11 +314,11 @@ public class UserProfileSearch extends AppCompatActivity implements View.OnClick
         });
 
 
-
     }
 
-    private void backButtonSearch() {
-        onBackPressed();
+    @Override
+    public void onBackPressed() {
+        finishAffinity();
     }
 
     @Override

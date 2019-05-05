@@ -8,6 +8,7 @@ public class AddDeviceModel {
 
     private String userName;
     private String userEmail;
+    private String userPhone;
     private String documentId;
     private String uid;
     private String selectDevice;
@@ -21,7 +22,7 @@ public class AddDeviceModel {
     public AddDeviceModel() {
     }
 
-    public AddDeviceModel(String userName, String userEmail, String uid, String selectDevice, String deviceName, String phoneImeiOne, String phoneImeiTwo, String mac, String purchaseDate, String status) {
+    public AddDeviceModel(String userName, String userEmail, String uid, String selectDevice, String deviceName, String phoneImeiOne, String phoneImeiTwo, String mac, String purchaseDate, String status,String userPhone) {
         this.userName = userName;
         this.userEmail = userEmail;
         this.uid = uid;
@@ -32,6 +33,7 @@ public class AddDeviceModel {
         this.mac = mac;
         this.purchaseDate = purchaseDate;
         this.status = status;
+        this.userPhone = userPhone;
     }
 
     public String getUserName() {
@@ -120,5 +122,13 @@ public class AddDeviceModel {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getUserPhone() {
+        return userPhone;
+    }
+
+    public void setUserPhone(String userPhone) {
+        this.userPhone = userPhone;
     }
 }
