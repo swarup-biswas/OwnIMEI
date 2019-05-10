@@ -84,11 +84,8 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
 
     private TextView ownerNameId;
     private TextView emailId;
+    private TextView ownerPhone;
 
-    //    private EditText phoneNumberId;
-//    private CountryCodePicker countryCodePicker;
-//    private Button profileSaveButton;
-//    private String codeSent;
     //User profile image
     private CircleImageView profileImage;
     //    private ImageView editImage;
@@ -96,14 +93,13 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
     private static final String SAMPLE_CROPPED_IMAGE_NAME = "IMEICropImage";
     private String destinationFileName;
     private Uri proImage;
-    private String proImageUri;
     //Menu
     private DrawerLayout drawerLayout;
     private LinearLayout menuEditProfile;
     private LinearLayout menuAddDevice;
     private LinearLayout menuSearch;
     private LinearLayout menuPosition;
-    //    private LinearLayout menuHistory;
+    // private LinearLayout menuHistory;
     private LinearLayout menuHelp;
     private LinearLayout menuAbout;
     private LinearLayout menuSignOut;
@@ -113,11 +109,6 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
     private FirebaseFirestore db;
     private FirebaseStorage firebaseStorage;
     private StorageReference storageRef;
-    //Mode status
-    private String[] modeName;
-
-    private String selectDeviceForFirstSignin;
-
     private String uId;
 
 
@@ -148,6 +139,7 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
         searchBtn = findViewById(R.id.user_profile_search_ID);
         ownerNameId = findViewById(R.id.ownerFirstNameID);
         emailId = findViewById(R.id.ownerEmailID);
+        ownerPhone = findViewById(R.id.owner_phone_ID);
         // Menu button find and set click
         menuButton = findViewById(R.id.user_profile_menu_ID);
         drawerLayout = findViewById(R.id.drawer_layout_main);
@@ -156,32 +148,25 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
         menuAddDevice = findViewById(R.id.menu_add_device);
         menuSearch = findViewById(R.id.menu_search);
         menuPosition = findViewById(R.id.menu_position);
-//        menuHistory = findViewById(R.id.menu_history);
         menuHelp = findViewById(R.id.menu_help);
         menuAbout = findViewById(R.id.menu_about);
         menuSignOut = findViewById(R.id.menu_sign_out);
 
         //User profile image
-//        editImage = findViewById(R.id.user_profile_edit_image_ic_ID);
         profileImage = findViewById(R.id.user_profile_image_ID);
         floatingActionButton.setOnClickListener(this);
         signOutId.setOnClickListener(this);
         searchBtn.setOnClickListener(this);
-//        statusChangeId.setOnClickListener(this);
         menuButton.setOnClickListener(this);
         menuEditProfile.setOnClickListener(this);
         menuAddDevice.setOnClickListener(this);
         menuSearch.setOnClickListener(this);
         menuPosition.setOnClickListener(this);
-//        menuHistory.setOnClickListener(this);
         menuHelp.setOnClickListener(this);
         menuAbout.setOnClickListener(this);
         menuSignOut.setOnClickListener(this);
         //User profile image
-//        editImage.setOnClickListener(this);
         profileImage.setOnClickListener(this);
-        //
-//        profileSaveButton.setOnClickListener(this);
 
         String uName = getIntent().getStringExtra("User_Name");
         String uEmail = getIntent().getStringExtra("User_Email");
@@ -210,9 +195,6 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
             case R.id.user_profile_search_ID:
                 searchUser();
                 break;
-            case R.id.profile_save_button_ID:
-//                phoneAuth();
-                break;
             case R.id.menu_position:
                 devicePosition();
                 drawerLayout.closeDrawer(GravityCompat.START);
@@ -230,9 +212,6 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
             case R.id.menu_search:
                 searchMenu();
                 break;
-//            case R.id.menu_history:
-//                historyMenu();
-//                break;
             case R.id.menu_help:
                 Intent helpIntent = new Intent(UserProfile.this, Help.class);
                 startActivity(helpIntent);
@@ -246,11 +225,18 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
             case R.id.menu_sign_out:
                 signOutUser();
                 break;
-//            //User profile image
-//            case R.id.user_profile_edit_image_ic_ID:
-//
-//                break;
 
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(UserProfile.this, UserProfileSearch.class));
+        hideProgressBar();
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
         }
     }
 
@@ -380,9 +366,14 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
         SharedPreferences sGetUserInfo = getSharedPreferences(USER_INFO, MODE_PRIVATE);
         String userName = sGetUserInfo.getString("Name", "");
         String userEmail = sGetUserInfo.getString("Email", "");
+        String userPhone = sGetUserInfo.getString("Phone","");
         ownerNameId.setText(userName);
-        emailId.setText(userEmail);
         drawerName.setText(userName);
+        emailId.setText(userEmail);
+        if (userPhone!=null){
+            ownerPhone.setVisibility(View.VISIBLE);
+            ownerPhone.setText(userPhone);
+        }
 
         //Recycler view start
         recyclerView = findViewById(R.id.recycle_view_user_profile);
@@ -432,14 +423,6 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
 
     //User information load from firebase end
 
-    private void editProfile() {
-
-    }
-
-//    private void historyMenu() {
-
-//    }
-
     private void searchMenu() {
         Intent searchMenuIntent = new Intent(UserProfile.this, UserProfileSearch.class);
         startActivity(searchMenuIntent);
@@ -455,17 +438,6 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
     private void openDrawerMenu() {
         drawerLayout.openDrawer(GravityCompat.START);
 
-    }
-
-    @Override
-    public void onBackPressed() {
-        startActivity(new Intent(UserProfile.this, UserProfileSearch.class));
-        hideProgressBar();
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
     }
 
     private void searchUser() {
@@ -612,9 +584,8 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
         sGetUserInfo.edit().clear().apply();
         Intent signOutIntent = new Intent(UserProfile.this, HomePage.class);
         signOutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        finish();
         startActivity(signOutIntent);
-
+        finish();
     }
 
     //Progressbar method

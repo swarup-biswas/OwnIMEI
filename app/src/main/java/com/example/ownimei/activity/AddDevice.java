@@ -207,20 +207,9 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
     }
 
     private void addDeviceBackButtonMethod() {
-//        SharedPreferences successSharedPreferences = getSharedPreferences(SIGN_UP_TOKEN, MODE_PRIVATE);
-//        String successTokenFinal = successSharedPreferences.getString("get_successToken", "No token found");
-//        Log.d("SuccessToken", "" + successTokenFinal);
-//        if (successTokenFinal.equals("" + 200)) {
-//            Log.d("SuccessToken", "" + successTokenFinal);
-//            Toast.makeText(AddDevice.this, "Sign in please!", Toast.LENGTH_SHORT).show();
-//            Intent intent1 = new Intent(AddDevice.this, SignIn.class);
-//            startActivity(intent1);
-//            finish();
-//        } else if (authAdd.getCurrentUser().getUid().equals(authAdd.getCurrentUser().getUid())) {
         Intent intent2 = new Intent(AddDevice.this, UserProfile.class);
         startActivity(intent2);
         finish();
-//        }
     }
 
     //Date picker
@@ -463,12 +452,12 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
                         builder.show();
                         return;
                     }
-                    Log.d("AddDevice12", "IMEI 1 : " + matchIMEiOne);
                     showProgressBar();
                     if (matchIMEiOne == null && matchIMEiTwo == null && matchMac == null) {
                         SharedPreferences sGetUserInfo = getSharedPreferences(USER_INFO, MODE_PRIVATE);
                         String userName = sGetUserInfo.getString("Name", "");
                         String userEmail = sGetUserInfo.getString("Email", "");
+                        phone = sGetUserInfo.getString("Phone","");
                         SharedPreferences sGetUID = getSharedPreferences(USER_ID, MODE_PRIVATE);
                         String userId = sGetUID.getString("get_UID", "");
                         //Adding data to fire store

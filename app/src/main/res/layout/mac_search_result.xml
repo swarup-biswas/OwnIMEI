@@ -19,46 +19,75 @@
             android:padding="10dp">
 
             <ImageView
-                android:id="@+id/show_search_image"
+                android:id="@+id/show_mac_search_image"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:layout_centerHorizontal="true"
                 android:src="@drawable/app_icon" />
+            <RelativeLayout
+                android:visibility="gone"
+                android:id="@+id/call_mac_relative"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:layout_below="@+id/show_mac_search_image"
+                android:layout_width="match_parent"
+                android:layout_height="35dp">
+                <TextView
+                    android:gravity="center"
+                    android:background="@drawable/call_now"
+                    android:id="@+id/show_mac_search_phone"
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:text="Call Now"
+                    android:textColor="@color/colorPrimaryWhite" />
+                <ImageView
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/call_now"
+                    android:id="@+id/call_ID"
+                    android:layout_toEndOf="@+id/show_mac_search_phone"
+                    android:layout_width="35dp"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_call"
+                    android:padding="5dp"/>
+
+            </RelativeLayout>
 
             <TextView
-                android:id="@+id/show_search_name"
+                android:id="@+id/show_mac_search_name"
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
-                android:layout_below="@+id/show_search_image"
+                android:layout_below="@+id/call_mac_relative"
                 android:layout_marginTop="10dp"
                 android:text="Owner name"
                 android:textColor="@color/colorLightBlack" />
 
             <TextView
-                android:id="@+id/show_search_email"
+                android:id="@+id/show_mac_search_email"
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
-                android:layout_below="@+id/show_search_name"
+                android:layout_below="@+id/show_mac_search_name"
                 android:text="Email"
                 android:textColor="@color/colorLightBlack" />
 
             <TextView
-                android:id="@+id/show_search_device_name"
+                android:id="@+id/show_mac_search_device_name"
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
-                android:layout_below="@+id/show_search_email"
+                android:layout_below="@+id/show_mac_search_email"
                 android:text="Model"
                 android:textColor="@color/colorLightBlack" />
+
             <TextView
                 android:id="@+id/show_search_mac"
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
-                android:layout_below="@+id/show_search_device_name"
+                android:layout_below="@+id/show_mac_search_device_name"
                 android:text="MAC"
                 android:textColor="@color/colorLightBlack" />
 
             <TextView
-                android:id="@+id/show_search_status"
+                android:id="@+id/show_mac_search_status"
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
                 android:layout_below="@+id/show_search_mac"
@@ -66,10 +95,10 @@
                 android:textColor="@color/colorLightBlack" />
 
             <Button
-                android:id="@+id/show_search_button"
+                android:id="@+id/show_mac_search_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/show_search_status"
+                android:layout_below="@+id/show_mac_search_status"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/button_border"
                 android:gravity="center_horizontal"
@@ -78,16 +107,19 @@
                 android:textColor="@color/colorPrimaryYellow"
                 android:textSize="18sp" />
 
-            <TextView
-                android:id="@+id/show_search_claim"
+            <Button
+                android:id="@+id/claim_mac_ID"
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:layout_below="@+id/show_search_button"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/show_mac_search_button"
                 android:layout_marginTop="10dp"
-                android:gravity="center"
+                android:background="@drawable/delete_button"
+                android:gravity="center_horizontal"
+                android:padding="10dp"
                 android:text="Claim !"
-                android:textSize="@dimen/font_size_16"
-                android:visibility="gone" />
+                android:textColor="@color/colorPrimaryWhite"
+                android:textSize="18sp" />
+
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 

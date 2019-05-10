@@ -109,7 +109,9 @@
                         android:maxLength="15"
                         android:textSize="@dimen/font_size_14"
                         android:textColor="@color/colorPrimaryWhite"
-                        android:textColorHint="@color/colorHintText" />
+                        android:textColorHint="@color/colorHintText"
+                        android:inputType="text"
+                        android:imeOptions="actionSearch"/>
                 <Button
                     android:id="@+id/home_search_button"
                     android:layout_marginTop="10dp"

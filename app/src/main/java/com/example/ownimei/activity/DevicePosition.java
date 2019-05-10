@@ -51,16 +51,7 @@ public class DevicePosition extends AppCompatActivity implements OnMapReadyCallb
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
 
         }
-//        goToLocation(23.802878, 90.370967, 16);
     }
-
-//    public void goToLocation(double lat, double lon, int zoom) {
-//        // Add a marker in Sydney and move the camera
-//        LatLng dhaka = new LatLng(lat, lon);
-//        mMap.addMarker(new MarkerOptions().position(dhaka).title("Marker in Dhaka"));
-//        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(dhaka, zoom);
-//        mMap.moveCamera(update);
-//    }
 
     private void getDeviceLocation() {
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(DevicePosition.this);

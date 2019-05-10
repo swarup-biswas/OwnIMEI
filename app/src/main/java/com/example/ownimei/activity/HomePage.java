@@ -2,6 +2,7 @@ package com.example.ownimei.activity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -12,12 +13,15 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,6 +51,8 @@ public class HomePage extends AppCompatActivity implements View.OnClickListener 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
     private FirebaseStorage firebaseStorage;
+    private int x;
+    private int y;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +65,7 @@ public class HomePage extends AppCompatActivity implements View.OnClickListener 
         signInId = findViewById(R.id.home_sign_in_ID);
         signUpId = findViewById(R.id.home_sign_up_ID);
         searchId = findViewById(R.id.home_search_ID);
+        searchId.setOnEditorActionListener(editorActionListener);
         webID = findViewById(R.id.home_website_ID);
         homeSearchButton = findViewById(R.id.home_search_button);
         homeSearchButton.setOnClickListener(this);
@@ -73,6 +80,16 @@ public class HomePage extends AppCompatActivity implements View.OnClickListener 
         }
 
     }
+
+    //Keyboard edit start
+    private TextView.OnEditorActionListener editorActionListener = new TextView.OnEditorActionListener() {
+        @Override
+        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+            searchMethod();
+            return false;
+        }
+    };
+    //end
 
     @Override
     public void onClick(View v) {
@@ -113,17 +130,18 @@ public class HomePage extends AppCompatActivity implements View.OnClickListener 
             builder1.show();
             return;
         }
-        showProgressBar();
         CollectionReference deviceInfoCollection = db.collection("DeviceInfo");
         Query query = deviceInfoCollection.whereEqualTo("phoneImeiOne", inputImei);
         Query queryTwoIMEI = deviceInfoCollection.whereEqualTo("phoneImeiTwo", inputImei);
         Query queryMac = deviceInfoCollection.whereEqualTo("mac", inputImei);
         final AddDeviceModel addDeviceModel = new AddDeviceModel();
 //IMEI 1
+        showProgressBar();
         query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 if (!queryDocumentSnapshots.isEmpty()) {
+                    x = 1;
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         hideProgressBar();
                         addDeviceModel.setUserName(document.getString("userName"));
@@ -132,46 +150,21 @@ public class HomePage extends AppCompatActivity implements View.OnClickListener 
                         addDeviceModel.setDeviceName(document.getString("deviceName"));
                         addDeviceModel.setStatus(document.getString("status"));
                         addDeviceModel.setUid(document.getString("uid"));
+                        addDeviceModel.setUserPhone(document.getString("userPhone"));
 
-
-                        final Dialog searchDialog = new Dialog(HomePage.this);
-                        searchDialog.setContentView(R.layout.imei_search_result);
-                        TextView name = (TextView) searchDialog.findViewById(R.id.show_search_name);
-                        name.setText("Owner name: " + addDeviceModel.getUserName());
-                        TextView email = (TextView) searchDialog.findViewById(R.id.show_search_email);
-                        email.setText("Email: " + addDeviceModel.getUserEmail());
-                        TextView model = (TextView) searchDialog.findViewById(R.id.show_search_device_name);
-                        model.setText("Model: " + addDeviceModel.getDeviceName());
-                        TextView imei = (TextView) searchDialog.findViewById(R.id.show_search_imei);
-                        imei.setText("IMEI: " + addDeviceModel.getPhoneImeiOne());
-                        TextView status = (TextView) searchDialog.findViewById(R.id.show_search_status);
-                        status.setText("Status: " + addDeviceModel.getStatus());
-                        if (addDeviceModel.getStatus().equals("Stolen mode")){
-                            ((TextView) searchDialog.findViewById(R.id.show_search_status)).setTextColor(Color.parseColor("#FF5252"));
-                        }else if (addDeviceModel.getStatus().equals("Safe mode")){
-                            ((TextView) searchDialog.findViewById(R.id.show_search_status)).setTextColor(Color.parseColor("#2DC92D"));
-                        }
-                        final ImageView image = searchDialog.findViewById(R.id.show_search_image);
-                        StorageReference storageRef = firebaseStorage.getReference();
-                        storageRef.child("ProfilePictures/" +addDeviceModel.getUid() + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                Glide.with(HomePage.this).load(uri).into(image);
-                            }
-                        });
-                        Button dialogButton = (Button) searchDialog.findViewById(R.id.show_search_button);
-                        dialogButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                searchId.setText("");
-                                searchDialog.dismiss();
-                            }
-                        });
-                        searchDialog.show();
+                        Intent intentHomeIMEI1 = new Intent(HomePage.this,ShowSearchResultActivity.class);
+                        intentHomeIMEI1.putExtra("userName",addDeviceModel.getUserName());
+                        intentHomeIMEI1.putExtra("userEmail",addDeviceModel.getUserEmail());
+                        intentHomeIMEI1.putExtra("phoneImeiOne",addDeviceModel.getPhoneImeiOne());
+                        intentHomeIMEI1.putExtra("deviceName",addDeviceModel.getDeviceName());
+                        intentHomeIMEI1.putExtra("status",addDeviceModel.getStatus());
+                        intentHomeIMEI1.putExtra("uid",addDeviceModel.getUid());
+                        intentHomeIMEI1.putExtra("userPhone",addDeviceModel.getUserPhone());
+                        startActivity(intentHomeIMEI1);
+                        finish();
                     }
                 } else {
                     hideProgressBar();
-                    Toast.makeText(HomePage.this, "This IMEI or Mac not registered!", Toast.LENGTH_LONG).show();
                 }
 
             }
@@ -179,7 +172,6 @@ public class HomePage extends AppCompatActivity implements View.OnClickListener 
             @Override
             public void onFailure(@NonNull Exception e) {
                 hideProgressBar();
-                Toast.makeText(HomePage.this, "Opps!! IMEI Not found", Toast.LENGTH_SHORT).show();
             }
         });
 //IMEI 2
@@ -187,63 +179,37 @@ public class HomePage extends AppCompatActivity implements View.OnClickListener 
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 if (!queryDocumentSnapshots.isEmpty()) {
+                    y = 2;
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         hideProgressBar();
                         addDeviceModel.setUserName(document.getString("userName"));
                         addDeviceModel.setUserEmail(document.getString("userEmail"));
-//                        addDeviceModel.setPhoneImeiOne(document.getString("phoneImeiTwo"));
                         addDeviceModel.setPhoneImeiTwo(document.getString("phoneImeiTwo"));
                         addDeviceModel.setDeviceName(document.getString("deviceName"));
                         addDeviceModel.setStatus(document.getString("status"));
                         addDeviceModel.setUid(document.getString("uid"));
+                        addDeviceModel.setUserPhone(document.getString("userPhone"));
 
-
-
-                        final Dialog searchDialog = new Dialog(HomePage.this);
-                        searchDialog.setContentView(R.layout.imei_search_result);
-                        TextView name = (TextView) searchDialog.findViewById(R.id.show_search_name);
-                        name.setText("Owner name: " + addDeviceModel.getUserName());
-                        TextView email = (TextView) searchDialog.findViewById(R.id.show_search_email);
-                        email.setText("Email: " + addDeviceModel.getUserEmail());
-                        TextView model = (TextView) searchDialog.findViewById(R.id.show_search_device_name);
-                        model.setText("Model: " + addDeviceModel.getDeviceName());
-                        TextView imei = (TextView) searchDialog.findViewById(R.id.show_search_imei);
-                        imei.setText("IMEI: " + addDeviceModel.getPhoneImeiTwo());
-                        TextView status = (TextView) searchDialog.findViewById(R.id.show_search_status);
-                        status.setText("Status: " + addDeviceModel.getStatus());
-                        if (addDeviceModel.getStatus().equals("Stolen mode")){
-                            ((TextView) searchDialog.findViewById(R.id.show_search_status)).setTextColor(Color.parseColor("#FF5252"));
-                        }else if (addDeviceModel.getStatus().equals("Safe mode")){
-                            ((TextView) searchDialog.findViewById(R.id.show_search_status)).setTextColor(Color.parseColor("#2DC92D"));
-                        }
-                        final ImageView image = searchDialog.findViewById(R.id.show_search_image);
-                        StorageReference storageRef = firebaseStorage.getReference();
-                        storageRef.child("ProfilePictures/" +addDeviceModel.getUid() + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                Glide.with(HomePage.this).load(uri).into(image);
-                            }
-                        });
-                        Button dialogButton = (Button) searchDialog.findViewById(R.id.show_search_button);
-                        dialogButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                searchId.setText("");
-                                searchDialog.dismiss();
-                            }
-                        });
-                        searchDialog.show();
+                        Intent intentHomeIMEI2 = new Intent(HomePage.this,ShowSearchResultActivity.class);
+                        intentHomeIMEI2.putExtra("userName",addDeviceModel.getUserName());
+                        intentHomeIMEI2.putExtra("userEmail",addDeviceModel.getUserEmail());
+                        intentHomeIMEI2.putExtra("phoneImeiTwo",addDeviceModel.getPhoneImeiTwo());
+                        intentHomeIMEI2.putExtra("deviceName",addDeviceModel.getDeviceName());
+                        intentHomeIMEI2.putExtra("status",addDeviceModel.getStatus());
+                        intentHomeIMEI2.putExtra("uid",addDeviceModel.getUid());
+                        intentHomeIMEI2.putExtra("userPhone",addDeviceModel.getUserPhone());
+                        startActivity(intentHomeIMEI2);
+                        finish();
                     }
                 } else {
                     hideProgressBar();
-                    Toast.makeText(HomePage.this, "This IMEI or MAC not registered!", Toast.LENGTH_LONG).show();
+
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 hideProgressBar();
-                Toast.makeText(HomePage.this, "Opps!! IMEI Not found", Toast.LENGTH_SHORT).show();
             }
         });
 //Mac
@@ -259,52 +225,34 @@ public class HomePage extends AppCompatActivity implements View.OnClickListener 
                         addDeviceModel.setDeviceName(document.getString("deviceName"));
                         addDeviceModel.setStatus(document.getString("status"));
                         addDeviceModel.setUid(document.getString("uid"));
+                        addDeviceModel.setUserPhone(document.getString("userPhone"));
 
-                        final Dialog searchDialog = new Dialog(HomePage.this);
-                        searchDialog.setContentView(R.layout.mac_search_result);
-                        TextView name = (TextView) searchDialog.findViewById(R.id.show_search_name);
-                        name.setText("Owner name: " + addDeviceModel.getUserName());
-                        TextView email = (TextView) searchDialog.findViewById(R.id.show_search_email);
-                        email.setText("Email: " + addDeviceModel.getUserEmail());
-                        TextView model = (TextView) searchDialog.findViewById(R.id.show_search_device_name);
-                        model.setText("Model: " + addDeviceModel.getDeviceName());
-                        TextView mac = (TextView) searchDialog.findViewById(R.id.show_search_mac);
-                        mac.setText("MAC: " + addDeviceModel.getMac());
-                        TextView status = (TextView) searchDialog.findViewById(R.id.show_search_status);
-                        status.setText("Status: " + addDeviceModel.getStatus());
-                        if (addDeviceModel.getStatus().equals("Stolen mode")){
-                            ((TextView) searchDialog.findViewById(R.id.show_search_status)).setTextColor(Color.parseColor("#FF5252"));
-                        }else if (addDeviceModel.getStatus().equals("Safe mode")){
-                            ((TextView) searchDialog.findViewById(R.id.show_search_status)).setTextColor(Color.parseColor("#2DC92D"));
-                        }
-                        final ImageView image = searchDialog.findViewById(R.id.show_search_image);
-                        StorageReference storageRef = firebaseStorage.getReference();
-                        storageRef.child("ProfilePictures/" +addDeviceModel.getUid() + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                Glide.with(HomePage.this).load(uri).into(image);
-                            }
-                        });
-                        Button dialogButton = (Button) searchDialog.findViewById(R.id.show_search_button);
-                        dialogButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                searchId.setText("");
-                                searchDialog.dismiss();
-                            }
-                        });
-                        searchDialog.show();
+                        Intent intentHomeMAC = new Intent(HomePage.this,ShowSearchResultActivity.class);
+                        intentHomeMAC.putExtra("userName",addDeviceModel.getUserName());
+                        intentHomeMAC.putExtra("userEmail",addDeviceModel.getUserEmail());
+                        intentHomeMAC.putExtra("mac",addDeviceModel.getMac());
+                        intentHomeMAC.putExtra("deviceName",addDeviceModel.getDeviceName());
+                        intentHomeMAC.putExtra("status",addDeviceModel.getStatus());
+                        intentHomeMAC.putExtra("uid",addDeviceModel.getUid());
+                        intentHomeMAC.putExtra("userPhone",addDeviceModel.getUserPhone());
+                        startActivity(intentHomeMAC);
+                        finish();
+
                     }
                 } else {
                     hideProgressBar();
-                    Toast.makeText(HomePage.this, "This IMEI or Mac not registered!", Toast.LENGTH_LONG).show();
+                    if (x != 1 && y != 2) {
+                        Toast.makeText(HomePage.this, "This IMEI or Mac not registered!", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 hideProgressBar();
-                Toast.makeText(HomePage.this, "Opps!! MAC address Not found", Toast.LENGTH_SHORT).show();
+                if (x != 1 && y != 2) {
+                    Toast.makeText(HomePage.this, "Opps!! Entered address Not found", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

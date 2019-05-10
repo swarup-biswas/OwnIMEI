@@ -44,16 +44,16 @@
         android:orientation="vertical">
 
         <EditText
-            android:layout_marginTop="20dp"
             android:id="@+id/help_message_ID"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:background="@drawable/search_border"
+            android:gravity="left"
             android:hint="Type your message here"
             android:inputType="textMultiLine|textCapSentences|textNoSuggestions"
             android:maxLines="10"
             android:minLines="6"
-            android:gravity="left"
             android:padding="10dp"
             android:scrollbarStyle="insideInset"
             android:textColor="@color/colorPrimaryWhite"

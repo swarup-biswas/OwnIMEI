@@ -14,10 +14,11 @@
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Does not match any account!"
+        android:text="@string/sign_in_error"
         android:gravity="center"
-        />
+        android:textColor="@color/colorRed"/>
     <TextView
+        android:visibility="gone"
         android:id="@+id/dialog_sign_up"
         android:layout_width="match_parent"
         android:layout_height="30dp"

@@ -4,15 +4,18 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -24,6 +27,7 @@ import com.example.ownimei.R;
 import com.example.ownimei.StaticClass.StaticClass;
 import com.example.ownimei.pojo.SignUpModel;
 import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -70,12 +74,30 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
         createAccountID = findViewById(R.id.create_account_ID);
         signInLogInBtn = findViewById(R.id.sign_in_LOGIN_btn_ID);
 
+        loginEmailID.setOnEditorActionListener(editorActionListener);
+        logInPassID.setOnEditorActionListener(editorActionListener);
         signInBackBtn.setOnClickListener(this);
         forgotPassID.setOnClickListener(this);
         createAccountID.setOnClickListener(this);
         signInLogInBtn.setOnClickListener(this);
 
     }
+    private TextView.OnEditorActionListener editorActionListener = new TextView.OnEditorActionListener() {
+        @Override
+        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+
+            switch (actionId){
+                case EditorInfo.IME_ACTION_NEXT:
+
+                    break;
+                case EditorInfo.IME_ACTION_DONE:
+                    userSignIn();
+                    break;
+            }
+
+            return false;
+        }
+    };
 
 
     @Override
@@ -157,6 +179,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                         if (authSignIn.getCurrentUser().isEmailVerified()) {
 
                             String userID = authSignIn.getUid();
+                            Log.d("Uid123",userID);
                             SharedPreferences.Editor editor = getSharedPreferences(USER_ID, MODE_PRIVATE).edit();
                             editor.putString("get_UID", "" + userID);
                             editor.apply();
@@ -187,14 +210,13 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                                         finish();
                                     } else {
                                         hideProgressBar();
-                                        Log.d("nnnnnnnn#", "else");
                                     }
                                 }
                             });
                         } else {
                             hideProgressBar();
                             AlertDialog.Builder builder = new AlertDialog.Builder(SignIn.this);
-                            builder.setMessage("Please verify your email address.\nIf you don't get verification link please resend.");
+                            builder.setMessage("Please verify your email address.\nIf you don't get verification link, Please resend.");
                             builder.setCancelable(false);
                             builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                 @Override
@@ -212,7 +234,6 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                                                 public void onComplete(@NonNull Task<Void> task) {
                                                     if (task.isSuccessful()) {
                                                         Toast.makeText(SignIn.this, "Verification link send", Toast.LENGTH_SHORT).show();
-                                                        Log.d("124234", "Email sent.");
                                                         authSignIn.signOut();
                                                     }
                                                 }
@@ -220,7 +241,6 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                                 }
                             });
                             builder.show();
-
                         }
                     } else {
                         hideProgressBar();

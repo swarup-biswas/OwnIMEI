@@ -1,6 +1,7 @@
 package com.example.ownimei.StaticClass;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.ConnectivityManager;
@@ -12,6 +13,7 @@ import android.view.inputmethod.InputMethodManager;
 
 
 public class StaticClass {
+
     //Hide keyboard method
     public static void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);

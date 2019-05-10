@@ -81,6 +81,8 @@
                     android:background="@drawable/search_border"
                     android:drawableEnd="@drawable/ic_inside_search"
                     android:hint="IMEI/MAC Search"
+                    android:inputType="text"
+                    android:imeOptions="actionSearch"
                     android:maxLength="15"
                     android:textAlignment="center"
                     android:textColor="@color/colorPrimaryWhite"

@@ -15,8 +15,6 @@
     <string name="ACCOUNT_KIT_CLIENT_TOKEN">8046db5edfa1b15756ec0fcf1f13b8d5</string>
 
 
-
-
     <string-array name="statusList">
         <item>Safe mode</item>
         <item>Lost mode</item>
@@ -36,4 +34,13 @@
         <item>Edit</item>
         <item>Delete</item>
     </string-array>
+
+    <string name="unisa">University of South Asia</string>
+    <string name="about">Be a student of University of South Asia,We feel proud and be a part of BCSE. Specially thanks to our honorable all BCSE department teachers.</string>
+    <string name="about_app">OwnIMEI is the platform which show the owner of the device and current status of the device.It will protect the device from cloning.
+        Check If the phone/laptop has been lost/stolen any where in the world.
+    If you are going to buy used phone/laptop, Make sure that it has not been reported as lost/stolen.</string>
+    <string name="claim">Your claim has been accepted. Now it is under considering. We will notify you the result in your mail within 24 working hours.</string>
+    <string name="sign_in_error">Oops! Looks like your email or password is incorrect.</string>
+
 </resources>

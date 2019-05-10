@@ -13,8 +13,10 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -65,7 +67,6 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
     private String gender;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +84,10 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         signUpBtnID = findViewById(R.id.sign_UP_btn_ID);
         forgotPass = findViewById(R.id.sign_up_forgot_password_ID);
         signIN = findViewById(R.id.signUp_signIn_ID);
+        firstNameID.setOnEditorActionListener(editorActionListener);
+        emailID.setOnEditorActionListener(editorActionListener);
+        passID.setOnEditorActionListener(editorActionListener);
+        retypePassID.setOnEditorActionListener(editorActionListener);
         forgotPass.setOnClickListener(this);
         signIN.setOnClickListener(this);
         signUpBackBtn.setOnClickListener(this);
@@ -90,32 +95,52 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
     }
 
+    private TextView.OnEditorActionListener editorActionListener = new TextView.OnEditorActionListener() {
+        @Override
+        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+
+            switch (actionId) {
+                case EditorInfo.IME_ACTION_NEXT:
+
+                    break;
+                case EditorInfo.IME_ACTION_DONE:
+                    signUPMethod();
+                    break;
+            }
+
+            return false;
+        }
+    };
+
     //On Click Listener
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_up_back_btn:
-                onBackPressedSignUp();
+                onBackPressed();
                 break;
 
             case R.id.sign_UP_btn_ID:
                 signUPMethod();
                 break;
             case R.id.sign_up_forgot_password_ID:
-                startActivity(new Intent(SignUp.this,ForgotPasswordInputMailOrPhone.class));
+                startActivity(new Intent(SignUp.this, ForgotPasswordInputMailOrPhone.class));
                 break;
             case R.id.signUp_signIn_ID:
-                startActivity(new Intent(SignUp.this,SignIn.class));
+                startActivity(new Intent(SignUp.this, SignIn.class));
                 break;
         }
 
     }
 
     //    //Back button
-    private void onBackPressedSignUp() {
+
+    @Override
+    public void onBackPressed() {
         hideProgressBar();
-        onBackPressed();
+        super.onBackPressed();
     }
+
 
     //check to see if the user is currently signed in
 
@@ -226,7 +251,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
 
-                        SignUpModel userInformation = new SignUpModel(firstName,lastName, email,phone,gender);
+                        SignUpModel userInformation = new SignUpModel(firstName, lastName, email, phone, gender);
                         DocumentReference userData = firebaseFirestore.collection("UserInformations").document(task.getResult().getUser().getUid());
                         userData.set(userInformation).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
@@ -243,7 +268,6 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
                                     hideProgressBar();
-
                                     Intent intent = new Intent(SignUp.this, SignUpPopUpActivity.class);
 //                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     startActivity(intent);

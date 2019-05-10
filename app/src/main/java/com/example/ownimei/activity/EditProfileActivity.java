@@ -179,7 +179,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onFailure(@NonNull Exception e) {
                 hideProgressBar();
-                Toast.makeText(EditProfileActivity.this, "Image not found", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(EditProfileActivity.this, "Image not found", Toast.LENGTH_SHORT).show();
             }
         });
         hideProgressBar();
@@ -340,7 +340,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                                     hideProgressBar();
                                     SharedPreferences sharedPreferences = getSharedPreferences(USER_INFO, MODE_PRIVATE);
                                     SharedPreferences.Editor editorUserInfo = sharedPreferences.edit();
-                                    editorUserInfo.putString("Phone", newPass);
+                                    editorUserInfo.putString("Password", newPass);
                                     editorUserInfo.apply();
                                     Toast.makeText(EditProfileActivity.this, "Password updated successfully", Toast.LENGTH_SHORT).show();
                                     dialog.dismiss();
@@ -582,7 +582,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                 if (loginResult.getAccessToken() != null) {
                     Toast.makeText(EditProfileActivity.this, "Success", Toast.LENGTH_LONG).show();
                 } else {
-                    Toast.makeText(EditProfileActivity.this, "Success:%s..." + loginResult.getAuthorizationCode().substring(0, 10), Toast.LENGTH_LONG).show();
+                  //  Toast.makeText(EditProfileActivity.this, "Success:%s..." + loginResult.getAuthorizationCode().substring(0, 10), Toast.LENGTH_LONG).show();
                 }
                 //Upload number
                 phone = etPhone.getText().toString();
@@ -602,12 +602,14 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
                             }
                         }
                     });
+                }else {
+                    Toast.makeText(EditProfileActivity.this,"Please try again.",Toast.LENGTH_LONG).show();
                 }
                 //startActivity(new Intent(EditProfileActivity.this, EditProfileActivity.class));
             }
 
             // Surface the result to your user in an appropriate way.
-            Toast.makeText(EditProfileActivity.this, "Last else", Toast.LENGTH_LONG).show();
+          //  Toast.makeText(EditProfileActivity.this, "Last else", Toast.LENGTH_LONG).show();
 
         }
         //Account kit end

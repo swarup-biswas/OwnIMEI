@@ -101,16 +101,6 @@
                                 app:civ_border_color="@android:color/white"
                                 app:civ_border_width="2dp" />
 
-                            <!--<ImageView-->
-                            <!--android:id="@+id/user_profile_edit_image_ic_ID"-->
-                            <!--android:layout_width="50dp"-->
-                            <!--android:layout_height="wrap_content"-->
-                            <!--android:layout_marginTop="30dp"-->
-                            <!--android:layout_toRightOf="@+id/user_profile_image_ID"-->
-                            <!--android:paddingTop="25dp"-->
-                            <!--android:paddingRight="20dp"-->
-                            <!--android:src="@drawable/ic_edit_image"-->
-                            <!--android:visibility="gone" />-->
                         </RelativeLayout>
 
                         <LinearLayout
@@ -118,14 +108,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="15dp"
                             android:gravity="center_horizontal"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Owner Name : "
-                                android:textColor="@color/colorPrimaryWhite"
-                                android:textSize="@dimen/font_size_18" />
+                            android:orientation="vertical">
 
                             <TextView
                                 android:id="@+id/ownerFirstNameID"
@@ -134,35 +117,27 @@
                                 android:text=""
                                 android:textColor="@color/colorPrimaryWhite"
                                 android:textSize="@dimen/font_size_18" />
+                            <TextView
+                                android:id="@+id/ownerEmailID"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:layout_marginBottom="10dp"
+                                android:textColor="@color/colorPrimaryWhite"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:id="@+id/owner_phone_ID"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:textColor="@color/colorPrimaryWhite"
+                                android:textSize="16sp" />
 
                         </LinearLayout>
 
-                        <TextView
-                            android:id="@+id/ownerEmailID"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:layout_marginBottom="10dp"
-                            android:text=""
-                            android:textColor="@color/colorPrimaryWhite"
-                            android:textSize="16sp" />
 
-                        <TextView
-                            android:id="@+id/owner_country_ID"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:text="Bangladesh"
-                            android:textColor="@color/colorPrimaryWhite"
-                            android:textSize="16sp"
-                            android:visibility="gone" />
 
-                        <Button
-                            android:id="@+id/profile_save_button_ID"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="save"
-                            android:visibility="gone" />
                     </LinearLayout>
 
                 </RelativeLayout>
