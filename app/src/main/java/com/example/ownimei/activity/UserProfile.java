@@ -1,14 +1,17 @@
 package com.example.ownimei.activity;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.provider.CallLog;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GravityCompat;
@@ -245,14 +248,49 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
         if (!StaticClass.isConnected(this)) {
             StaticClass.buildDialog(this).show();
         } else {
-            Intent positionIntent = new Intent(UserProfile.this, DevicePosition.class);
-            startActivity(positionIntent);
+//            Intent positionIntent = new Intent(UserProfile.this, DevicePosition.class);
+//            startActivity(positionIntent);
+
+            //Location enable start
+
+            LocationManager lm = (LocationManager)UserProfile.this.getSystemService(Context.LOCATION_SERVICE);
+            boolean gps_enabled = false;
+//            boolean network_enabled = false;
+
+            try {
+                gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            } catch(Exception ex) {}
+
+//            try {
+//                network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+//            } catch(Exception ex) {}
+
+            if(!gps_enabled) {
+                // notify user
+                new AlertDialog.Builder(UserProfile.this)
+                        .setMessage(R.string.gps_dialog)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                                UserProfile.this.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                            }
+                        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).setCancelable(false).show();
+            }else {
+                Intent positionIntent = new Intent(UserProfile.this, DevicePosition.class);
+                startActivity(positionIntent);
+            }
+            //Location enable end
+
         }
 
     }
 
     //On Click Listener end
-
 
     //    //User profile image start
     private void editUserProImage() {

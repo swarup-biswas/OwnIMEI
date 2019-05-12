@@ -42,5 +42,7 @@
     If you are going to buy used phone/laptop, Make sure that it has not been reported as lost/stolen.</string>
     <string name="claim">Your claim has been accepted. Now it is under considering. We will notify you the result in your mail within 24 working hours.</string>
     <string name="sign_in_error">Oops! Looks like your email or password is incorrect.</string>
+    <string name="delete_notification">You won\'t be abel to restore it.</string>
+    <string name="gps_dialog">GPS network not enabled \n Please enable location</string>
 
 </resources>

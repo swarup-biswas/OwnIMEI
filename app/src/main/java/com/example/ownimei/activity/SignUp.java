@@ -154,7 +154,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         //Name validation check
         if (firstName.isEmpty()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(SignUp.this);
-            builder.setMessage("Please enter your first name");
+            builder.setMessage("Please enter your name");
             builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {

@@ -117,9 +117,6 @@ public class UserProfileSearch extends AppCompatActivity implements View.OnClick
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-//            case R.id.sign_in_search_back_btn:
-//                backButtonSearch();
-//                break;
             case R.id.user_profile_search_image_ID:
                 startActivity(new Intent(UserProfileSearch.this, UserProfile.class));
                 break;
@@ -130,6 +127,10 @@ public class UserProfileSearch extends AppCompatActivity implements View.OnClick
     }
 
     private void searchIMEI() {
+        if (!StaticClass.isConnected(UserProfileSearch.this)){
+            StaticClass.buildDialog(UserProfileSearch.this);
+            return;
+        }
         String inputImei = userSearch.getText().toString();
         if (inputImei.isEmpty()) {
             AlertDialog.Builder builder1 = new AlertDialog.Builder(UserProfileSearch.this);

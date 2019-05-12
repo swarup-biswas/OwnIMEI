@@ -58,6 +58,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
 
     public static final String SIGN_UP_TOKEN = "SIGN_UP_Success_Token";
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +67,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
 
         authSignIn = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+
 
         signInBackBtn = findViewById(R.id.sign_in_back_btn);
         loginEmailID = findViewById(R.id.sign_IN_email_ID);
@@ -82,11 +84,13 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
         signInLogInBtn.setOnClickListener(this);
 
     }
+
+
     private TextView.OnEditorActionListener editorActionListener = new TextView.OnEditorActionListener() {
         @Override
         public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
-            switch (actionId){
+            switch (actionId) {
                 case EditorInfo.IME_ACTION_NEXT:
 
                     break;
@@ -179,7 +183,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                         if (authSignIn.getCurrentUser().isEmailVerified()) {
 
                             String userID = authSignIn.getUid();
-                            Log.d("Uid123",userID);
+                            Log.d("Uid123", userID);
                             SharedPreferences.Editor editor = getSharedPreferences(USER_ID, MODE_PRIVATE).edit();
                             editor.putString("get_UID", "" + userID);
                             editor.apply();
@@ -202,12 +206,28 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                                         editorUserInfo.putString("Password", loginPassword);
                                         editorUserInfo.apply();
                                         hideProgressBar();
-                                        Intent signInIntent = new Intent(SignIn.this, UserProfileSearch.class);
-                                        signInIntent.putExtra("User_Name", firstName);
-                                        signInIntent.putExtra("User_Email", emailUser);
+                                        boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getBoolean("isFirstRun", true);
+                                        if (isFirstRun) {
+                                            hideProgressBar();
+                                            Intent signInIntent = new Intent(SignIn.this, UserProfile.class);
+                                            signInIntent.putExtra("User_Name", firstName);
+                                            signInIntent.putExtra("User_Email", emailUser);
+                                            getSharedPreferences("PREFERENCE", MODE_PRIVATE)
+                                                    .edit()
+                                                    .putBoolean("isFirstRun", false)
+                                                    .apply();
+                                            startActivity(signInIntent);
+                                            finish();
+                                        } else {
+                                            hideProgressBar();
+                                            Intent signInIntent = new Intent(SignIn.this, UserProfileSearch.class);
+                                            signInIntent.putExtra("User_Name", firstName);
+                                            signInIntent.putExtra("User_Email", emailUser);
 //                                        signInIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                        startActivity(signInIntent);
-                                        finish();
+                                            startActivity(signInIntent);
+                                            finish();
+                                        }
+
                                     } else {
                                         hideProgressBar();
                                     }
@@ -248,11 +268,11 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                         dialog.setContentView(R.layout.signin_dialog_for_not_signup_user);
                         TextView signUpDialog = dialog.findViewById(R.id.dialog_sign_up);
-                        Button  buttonDialog = dialog.findViewById(R.id.dialog_ok);
+                        Button buttonDialog = dialog.findViewById(R.id.dialog_ok);
                         signUpDialog.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                startActivity(new Intent(SignIn.this,SignUp.class));
+                                startActivity(new Intent(SignIn.this, SignUp.class));
                                 dialog.dismiss();
                             }
                         });

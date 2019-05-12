@@ -53,7 +53,7 @@ public class StaticClass {
 
             }
         });
-
+        builder.show();
         return builder;
     }
     //Net connection check end

@@ -51,6 +51,7 @@ public class HomePage extends AppCompatActivity implements View.OnClickListener 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
     private FirebaseStorage firebaseStorage;
+    private String finalImei;
     private int x;
     private int y;
 
@@ -85,7 +86,7 @@ public class HomePage extends AppCompatActivity implements View.OnClickListener 
     private TextView.OnEditorActionListener editorActionListener = new TextView.OnEditorActionListener() {
         @Override
         public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-            searchMethod();
+                searchMethod();
             return false;
         }
     };
@@ -104,7 +105,7 @@ public class HomePage extends AppCompatActivity implements View.OnClickListener 
                 startActivity(signUpIntent);
                 break;
             case R.id.home_search_button:
-                searchMethod();
+                    searchMethod();
                 break;
             case R.id.home_search_ID:
                 //TODO search action
@@ -118,6 +119,10 @@ public class HomePage extends AppCompatActivity implements View.OnClickListener 
     }
 
     private void searchMethod() {
+        if (!StaticClass.isConnected(HomePage.this)){
+            StaticClass.buildDialog(HomePage.this);
+            return;
+        }
         String inputImei = searchId.getText().toString();
         if (inputImei.isEmpty()) {
             AlertDialog.Builder builder1 = new AlertDialog.Builder(HomePage.this);
@@ -151,6 +156,8 @@ public class HomePage extends AppCompatActivity implements View.OnClickListener 
                         addDeviceModel.setStatus(document.getString("status"));
                         addDeviceModel.setUid(document.getString("uid"));
                         addDeviceModel.setUserPhone(document.getString("userPhone"));
+
+                        finalImei = addDeviceModel.getPhoneImeiOne();
 
                         Intent intentHomeIMEI1 = new Intent(HomePage.this,ShowSearchResultActivity.class);
                         intentHomeIMEI1.putExtra("userName",addDeviceModel.getUserName());

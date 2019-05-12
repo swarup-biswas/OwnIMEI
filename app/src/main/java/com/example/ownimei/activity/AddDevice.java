@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -103,7 +104,7 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
         addDeviceButton.setOnClickListener(this);
         addDevicePurchaseDate.setOnClickListener(this);
         addDeviceMode.setOnClickListener(this);
-       // Query start
+        // Query start
         addDeviceIMEIOne.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -178,6 +179,7 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
             }
         });
         //Query end
+
     }
 
     @Override
@@ -198,6 +200,7 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
         }
 
     }
+
 
     //Back button
     @Override
@@ -322,7 +325,6 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
     }
 
     private void phone() {
-
         //Button Save device information
         addDeviceButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -522,7 +524,7 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
                             AlertDialog dialogOne = builderOne.create();
                             dialogOne.setCancelable(false);
                             dialogOne.show();
-                        }else {
+                        } else {
                             hideProgressBar();
                         }
                     }
@@ -532,7 +534,7 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     hideProgressBar();
-                    Toast.makeText(AddDevice.this,""+e.getMessage(),Toast.LENGTH_LONG).show();
+                    Toast.makeText(AddDevice.this, "" + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
@@ -565,7 +567,7 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
                                 AlertDialog dialogOne = builderOne.create();
                                 dialogOne.setCancelable(false);
                                 dialogOne.show();
-                            }else {
+                            } else {
                                 hideProgressBar();
                             }
                         }
@@ -575,7 +577,7 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         hideProgressBar();
-                        Toast.makeText(AddDevice.this,""+e.getMessage(),Toast.LENGTH_LONG).show();
+                        Toast.makeText(AddDevice.this, "" + e.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 }).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -618,7 +620,7 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
                             AlertDialog dialogOne = builderOne.create();
                             dialogOne.setCancelable(false);
                             dialogOne.show();
-                        }else {
+                        } else {
                             hideProgressBar();
                         }
                     }
@@ -633,7 +635,7 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     hideProgressBar();
-                    Toast.makeText(AddDevice.this,""+e.getMessage(),Toast.LENGTH_LONG).show();
+                    Toast.makeText(AddDevice.this, "" + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             });
             //IMEI two
@@ -661,7 +663,7 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
                                 AlertDialog dialogOne = builderOne.create();
                                 dialogOne.setCancelable(false);
                                 dialogOne.show();
-                            }else {
+                            } else {
                                 hideProgressBar();
                             }
                         }
@@ -676,7 +678,7 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         hideProgressBar();
-                        Toast.makeText(AddDevice.this,""+e.getMessage(),Toast.LENGTH_LONG).show();
+                        Toast.makeText(AddDevice.this, "" + e.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -714,7 +716,7 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
 //                            dialogOne.setCanceledOnTouchOutside(false);
                             dialogOne.setCancelable(false);
                             dialogOne.show();
-                        }else {
+                        } else {
                             hideProgressBar();
                         }
                     }
@@ -724,7 +726,7 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     hideProgressBar();
-                    Toast.makeText(AddDevice.this,""+e.getMessage(),Toast.LENGTH_LONG).show();
+                    Toast.makeText(AddDevice.this, "" + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override

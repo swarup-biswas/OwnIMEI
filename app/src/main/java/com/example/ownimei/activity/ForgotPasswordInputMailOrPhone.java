@@ -6,13 +6,16 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ownimei.R;
+import com.example.ownimei.StaticClass.StaticClass;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -32,12 +35,20 @@ public class ForgotPasswordInputMailOrPhone extends AppCompatActivity implements
         authForgotPass = FirebaseAuth.getInstance();
         backButtonID = findViewById(R.id.forgot_password_back_btn);
         setEmailId = findViewById(R.id.forgot_password_input_mail_ID);
+        setEmailId.setOnEditorActionListener(editorActionListener);
         nextButtonID = findViewById(R.id.forgot_password_input_mail_button_ID);
         backButtonID.setOnClickListener(this);
         setEmailId.setOnClickListener(this);
         nextButtonID.setOnClickListener(this);
     }
 
+    private TextView.OnEditorActionListener editorActionListener = new TextView.OnEditorActionListener() {
+        @Override
+        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+            forgotPassImplementMethod();
+            return false;
+        }
+    };
 
 
     @Override
@@ -46,17 +57,22 @@ public class ForgotPasswordInputMailOrPhone extends AppCompatActivity implements
             case R.id.forgot_password_back_btn:
                 onBackPressed();
                 break;
-                case R.id.forgot_password_input_mail_button_ID:
-                    forgotPassImplementMethod();
+            case R.id.forgot_password_input_mail_button_ID:
+                forgotPassImplementMethod();
                 break;
         }
     }
 
     private void forgotPassImplementMethod() {
+        if (!StaticClass.isConnected(ForgotPasswordInputMailOrPhone.this)) {
+            StaticClass.buildDialog(ForgotPasswordInputMailOrPhone.this);
+            return;
+        }
+
         final String forgotEmail = setEmailId.getText().toString().trim();
-        if (forgotEmail.isEmpty()){
-            AlertDialog.Builder builder  = new AlertDialog.Builder(ForgotPasswordInputMailOrPhone.this);
-            builder.setMessage("Please enter your password");
+        if (forgotEmail.isEmpty()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(ForgotPasswordInputMailOrPhone.this);
+            builder.setMessage("Please enter your email");
             builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -64,17 +80,18 @@ public class ForgotPasswordInputMailOrPhone extends AppCompatActivity implements
                 }
             });
             AlertDialog dialog = builder.create();
-            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorRed));
+//            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorRed));
+            dialog.show();
             return;
         }
         showProgressBar();
         authForgotPass.sendPasswordResetEmail(forgotEmail).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()){
+                if (task.isSuccessful()) {
                     hideProgressBar();
-                    Toast.makeText(ForgotPasswordInputMailOrPhone.this,"Email sent, Please check your email",Toast.LENGTH_SHORT).show();
-                    Intent forgotInt = new Intent(ForgotPasswordInputMailOrPhone.this,SignIn.class);
+                    Toast.makeText(ForgotPasswordInputMailOrPhone.this, "Email sent, Please check your email", Toast.LENGTH_LONG).show();
+                    Intent forgotInt = new Intent(ForgotPasswordInputMailOrPhone.this, SignIn.class);
                     startActivity(forgotInt);
                     finish();
                 }
@@ -84,11 +101,12 @@ public class ForgotPasswordInputMailOrPhone extends AppCompatActivity implements
             @Override
             public void onFailure(@NonNull Exception e) {
                 hideProgressBar();
-                Toast.makeText(ForgotPasswordInputMailOrPhone.this,"Email not sent",Toast.LENGTH_SHORT).show();
+                Toast.makeText(ForgotPasswordInputMailOrPhone.this, "Please try again", Toast.LENGTH_LONG).show();
             }
         });
 
     }
+
     //Progressbar method
     static KProgressHUD kProgressHUD;
 
