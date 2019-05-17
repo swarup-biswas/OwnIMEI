@@ -403,37 +403,13 @@ public class EditDeviceInformationActivity extends AppCompatActivity implements 
                 return;
             }
         }//End
-//        showProgressBar();
-//        if (!StaticClass.isConnected(EditDeviceInformationActivity.this)) {
-//            StaticClass.buildDialog(EditDeviceInformationActivity.this).show();
-//            hideProgressBar();
-//        }
-//        db.collection("DeviceInfo").document(documentID)
-//                .update("deviceName", dName, "mac", eMac, "phoneImeiOne", eOne, "phoneImeiTwo", eTwo, "purchaseDate", eDate, "status", eStatus)
-//                .addOnCompleteListener(new OnCompleteListener<Void>(
-//
-//                ) {
-//                    @Override
-//                    public void onComplete(@NonNull Task<Void> task) {
-//                        if (task.isSuccessful()) {
-//                            hideProgressBar();
-//                            startActivity(new Intent(EditDeviceInformationActivity.this, UserProfile.class));
-//                            Toast.makeText(EditDeviceInformationActivity.this, "Update success", Toast.LENGTH_SHORT).show();
-//                        } else {
-//                            hideProgressBar();
-//                            Toast.makeText(EditDeviceInformationActivity.this, "Update failed", Toast.LENGTH_SHORT).show();
-//                        }
-//
-//                    }
-//                });
-
 
         //Test
-        //Delete dialog start
-        final Dialog cDelete = new Dialog(EditDeviceInformationActivity.this);
-        cDelete.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        cDelete.setContentView(R.layout.delete_dialog);
-        Button cobButton = (Button) cDelete.findViewById(R.id.c_delete_ID);
+        //Update dialog start
+        final Dialog cUpdate = new Dialog(EditDeviceInformationActivity.this);
+        cUpdate.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        cUpdate.setContentView(R.layout.update_dialog);
+        Button cobButton = (Button) cUpdate.findViewById(R.id.update_button_ID);
         SharedPreferences sGetUserInfo = getSharedPreferences(USER_INFO, MODE_PRIVATE);
         final String userEmail = sGetUserInfo.getString("Email", "");
         final String userPass = sGetUserInfo.getString("Password", "");
@@ -441,9 +417,9 @@ public class EditDeviceInformationActivity extends AppCompatActivity implements 
 
             @Override
             public void onClick(View v) {
-                cDelete.dismiss();
+                cUpdate.dismiss();
                 showProgressBar();
-                String pass = ((EditText) cDelete.findViewById(R.id.delete_con_pass_ID)).getText().toString();
+                String pass = ((EditText) cUpdate.findViewById(R.id.update_con_pass_ID)).getText().toString();
                 if (pass.isEmpty()) {
                     hideProgressBar();
                     android.support.v7.app.AlertDialog.Builder builder1 = new android.support.v7.app.AlertDialog.Builder(EditDeviceInformationActivity.this);
@@ -519,7 +495,7 @@ public class EditDeviceInformationActivity extends AppCompatActivity implements 
 
             }
         });
-        cDelete.show();
+        cUpdate.show();
         //Test end
 
     }

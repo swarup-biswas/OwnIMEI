@@ -48,6 +48,7 @@ public class ShowSearchResultActivity extends AppCompatActivity implements View.
     private String claimID;
     private String claimIDIMEI2;
     private String claimIDMAC;
+    private String status;
 
     private FirebaseStorage firebaseStorage;
     private FirebaseFirestore db;
@@ -81,7 +82,7 @@ public class ShowSearchResultActivity extends AppCompatActivity implements View.
             claimID = bundle.getString("phoneImeiOne");
             claimIDIMEI2 = bundle.getString("phoneImeiTwo");
             claimIDMAC = bundle.getString("mac");
-
+            status = bundle.getString("status");
             if (claimID != null) {
                 showIMEI.setVisibility(View.VISIBLE);
                 showIMEI.setText("IMEI: " + claimID);
@@ -96,7 +97,15 @@ public class ShowSearchResultActivity extends AppCompatActivity implements View.
                 showMAC.setVisibility(View.VISIBLE);
                 showMAC.setText("MAC: "+claimIDMAC);
             }
-            showStatus.setText("Status: " + bundle.getString("status"));
+            if (status.equals("Safe mode")){
+                showStatus.setText(status);
+                showStatus.setTextColor(getResources().getColor(R.color.colorGreen));
+            }
+            if (status.equals("Lost mode")|| status.equals("Stolen mode")){
+                showStatus.setText(status);
+                showStatus.setTextColor(getResources().getColor(R.color.colorRed));
+            }
+
             uid = bundle.getString("uid");
             phoneNumber = bundle.getString("userPhone");
         }

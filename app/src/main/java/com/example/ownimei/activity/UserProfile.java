@@ -241,6 +241,7 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
         } else {
             super.onBackPressed();
         }
+        finish();
     }
 
     //Device current position

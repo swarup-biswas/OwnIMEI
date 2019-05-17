@@ -246,6 +246,19 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
 
     private void onLogin(LoginType phone) {
         phoneNumber1 = etPhone.getText().toString();
+        if (phoneNumber1.isEmpty()){
+            AlertDialog.Builder dialog = new AlertDialog.Builder(EditProfileActivity.this);
+
+            dialog.setMessage("Please enter your valid phone number");
+            dialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
+            return;
+        }
         PhoneNumber phoneNumber = new PhoneNumber("+88", phoneNumber1, "BD");
 
         final Intent intent = new Intent(EditProfileActivity.this, AccountKitActivity.class);

@@ -128,11 +128,13 @@
                 android:visibility="gone"/>
 
             <TextView
+                android:gravity="center"
                 android:id="@+id/show_search_status"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="35dp"
                 android:layout_below="@+id/show_search_mac"
                 android:text="Status"
+                android:textSize="18sp"
                 android:textColor="@color/colorLightBlack" />
 
             <Button
