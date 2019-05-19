@@ -175,84 +175,6 @@ public class UserProfileSearch extends AppCompatActivity implements View.OnClick
                         intentHomeIMEI1.putExtra("userPhone",addDeviceModel.getUserPhone());
                         startActivity(intentHomeIMEI1);
                         finish();
-
-//                        final Dialog searchDialog = new Dialog(UserProfileSearch.this);
-//                        searchDialog.setContentView(R.layout.imei_search_result);
-//                        TextView name = (TextView) searchDialog.findViewById(R.id.show_search_name);
-//                        name.setText("Owner name: " + addDeviceModel.getUserName());
-//                        TextView email = (TextView) searchDialog.findViewById(R.id.show_search_email);
-//                        email.setText("Email: " + addDeviceModel.getUserEmail());
-//                        TextView model = (TextView) searchDialog.findViewById(R.id.show_search_device_name);
-//                        model.setText("Model: " + addDeviceModel.getDeviceName());
-//                        TextView imei = (TextView) searchDialog.findViewById(R.id.show_search_imei);
-//                        imei.setText("IMEI: " + addDeviceModel.getPhoneImeiOne());
-//                        TextView status = (TextView) searchDialog.findViewById(R.id.show_search_status);
-//                        status.setText("Status: " + addDeviceModel.getStatus());
-//                        if (addDeviceModel.getStatus().equals("Stolen mode") || addDeviceModel.getStatus().equals("Lost mode")) {
-//                            ((TextView) searchDialog.findViewById(R.id.show_search_status)).setTextColor(Color.parseColor("#FF5252"));
-//                            searchDialog.findViewById(R.id.call_imei_relative).setVisibility(View.VISIBLE);
-//                        } else if (addDeviceModel.getStatus().equals("Safe mode")) {
-//                            ((TextView) searchDialog.findViewById(R.id.show_search_status)).setTextColor(Color.parseColor("#2DC92D"));
-//                        }
-//                        final ImageView image = searchDialog.findViewById(R.id.show_search_image);
-//                        StorageReference storageRef = firebaseStorage.getReference();
-//                        storageRef.child("ProfilePictures/" + addDeviceModel.getUid() + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                            @Override
-//                            public void onSuccess(Uri uri) {
-//                                Glide.with(UserProfileSearch.this).load(uri).into(image);
-//                            }
-//                        });
-//
-//                        Button dialogButton = (Button) searchDialog.findViewById(R.id.show_search_button);
-//                        dialogButton.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                hideProgressBar();
-//                                userSearch.setText("");
-//                                searchDialog.dismiss();
-//                            }
-//                        });
-//                        final RelativeLayout macCallButton = searchDialog.findViewById(R.id.call_imei_relative);
-//                        macCallButton.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                try {
-//                                    Intent my_callIntent = new Intent(Intent.ACTION_DIAL);
-//                                    my_callIntent.setData(Uri.parse("tel:" + addDeviceModel.getUserPhone()));
-//                                    //here the word 'tel' is important for making a call...
-//                                    startActivity(my_callIntent);
-//                                } catch (ActivityNotFoundException e) {
-//                                    Toast.makeText(getApplicationContext(), "Error in your phone call" + e.getMessage(), Toast.LENGTH_LONG).show();
-//                                }
-//                            }
-//                        });
-//                        final Button claim = searchDialog.findViewById(R.id.claim_imei_ID);
-//                        claim.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-//                                emailIntent.setType("text/plain");
-//                                emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
-//                                        new String[]{  "ownimei19@gmail.com"});
-//                                emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Claim ID: "+addDeviceModel.getPhoneImeiOne());
-//                                emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, "Add Message here...");
-//
-//                                emailIntent.setType("message/rfc822");
-//
-//                                try {
-//                                    startActivity(Intent.createChooser(emailIntent,
-//                                            "Send email using..."));
-//                                    userSearch.setText("");
-//                                } catch (android.content.ActivityNotFoundException ex) {
-//                                    Toast.makeText(UserProfileSearch.this,
-//                                            "No email clients installed.",
-//                                            Toast.LENGTH_SHORT).show();
-//                                }
-//                                hideProgressBar();
-//                                searchDialog.dismiss();
-//                            }
-//                        });
-//                        searchDialog.show();
                     }
                 }
 
@@ -261,7 +183,6 @@ public class UserProfileSearch extends AppCompatActivity implements View.OnClick
             @Override
             public void onFailure(@NonNull Exception e) {
                 hideProgressBar();
-//                Toast.makeText(UserProfileSearch.this, "Opps!! IMEI Not found", Toast.LENGTH_SHORT).show();
             }
         });
 //IMEI 2
@@ -291,84 +212,6 @@ public class UserProfileSearch extends AppCompatActivity implements View.OnClick
                         intentHomeIMEI2.putExtra("userPhone",addDeviceModel.getUserPhone());
                         startActivity(intentHomeIMEI2);
                         finish();
-
-//                        final Dialog searchDialog = new Dialog(UserProfileSearch.this);
-//                        searchDialog.setContentView(R.layout.imei_search_result);
-//                        TextView name = (TextView) searchDialog.findViewById(R.id.show_search_name);
-//                        name.setText("Owner name: " + addDeviceModel.getUserName());
-//                        TextView email = (TextView) searchDialog.findViewById(R.id.show_search_email);
-//                        email.setText("Email: " + addDeviceModel.getUserEmail());
-//                        TextView model = (TextView) searchDialog.findViewById(R.id.show_search_device_name);
-//                        model.setText("Model: " + addDeviceModel.getDeviceName());
-//                        TextView imei = (TextView) searchDialog.findViewById(R.id.show_search_imei);
-//                        imei.setText("IMEI: " + addDeviceModel.getPhoneImeiTwo());
-//                        TextView status = (TextView) searchDialog.findViewById(R.id.show_search_status);
-//                        status.setText("Status: " + addDeviceModel.getStatus());
-//                        if (addDeviceModel.getStatus().equals("Stolen mode") || addDeviceModel.getStatus().equals("Lost mode")) {
-//                            ((TextView) searchDialog.findViewById(R.id.show_search_status)).setTextColor(Color.parseColor("#FF5252"));
-//                            searchDialog.findViewById(R.id.call_imei_relative).setVisibility(View.VISIBLE);
-//                        } else if (addDeviceModel.getStatus().equals("Safe mode")) {
-//                            ((TextView) searchDialog.findViewById(R.id.show_search_status)).setTextColor(Color.parseColor("#2DC92D"));
-//                        }
-//                        final ImageView image = searchDialog.findViewById(R.id.show_search_image);
-//                        StorageReference storageRef = firebaseStorage.getReference();
-//                        storageRef.child("ProfilePictures/" + addDeviceModel.getUid() + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                            @Override
-//                            public void onSuccess(Uri uri) {
-//                                Glide.with(UserProfileSearch.this).load(uri).into(image);
-//                            }
-//                        });
-//                        Button dialogButton = (Button) searchDialog.findViewById(R.id.show_search_button);
-//                        dialogButton.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                hideProgressBar();
-//                                userSearch.setText("");
-//                                searchDialog.dismiss();
-//                            }
-//                        });
-//                        final RelativeLayout macCallButton = searchDialog.findViewById(R.id.call_imei_relative);
-//                        macCallButton.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                try {
-//                                    Intent my_callIntent = new Intent(Intent.ACTION_DIAL);
-//                                    my_callIntent.setData(Uri.parse("tel:" + addDeviceModel.getUserPhone()));
-//                                    //here the word 'tel' is important for making a call...
-//                                    startActivity(my_callIntent);
-//                                } catch (ActivityNotFoundException e) {
-//                                    Toast.makeText(getApplicationContext(), "Error in your phone call" + e.getMessage(), Toast.LENGTH_LONG).show();
-//                                }
-//                            }
-//                        });
-//                        Button claim = searchDialog.findViewById(R.id.claim_imei_ID);
-//                        claim.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-//                                emailIntent.setType("text/plain");
-//                                emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
-//                                        new String[]{  "ownimei19@gmail.com"});
-//                                emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Claim ID: "+addDeviceModel.getPhoneImeiTwo());
-//                                emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, "Add Message here...");
-//
-//                                emailIntent.setType("message/rfc822");
-//
-//                                try {
-//                                    startActivity(Intent.createChooser(emailIntent,
-//                                            "Send email using..."));
-//                                    userSearch.setText("");
-//                                    StaticClass.hideKeyboard(UserProfileSearch.this);
-//                                } catch (android.content.ActivityNotFoundException ex) {
-//                                    Toast.makeText(UserProfileSearch.this,
-//                                            "No email clients installed.",
-//                                            Toast.LENGTH_SHORT).show();
-//                                }
-//                                hideProgressBar();
-//                                searchDialog.dismiss();
-//                            }
-//                        });
-//                        searchDialog.show();
                     }
                 }
             }
@@ -404,84 +247,6 @@ public class UserProfileSearch extends AppCompatActivity implements View.OnClick
                         intentHomeMAC.putExtra("userPhone",addDeviceModel.getUserPhone());
                         startActivity(intentHomeMAC);
                         finish();
-
-//                        final Dialog searchDialog = new Dialog(UserProfileSearch.this);
-//                        searchDialog.setContentView(R.layout.mac_search_result);
-//                        TextView name = (TextView) searchDialog.findViewById(R.id.show_search_name);
-//                        name.setText("Owner name: " + addDeviceModel.getUserName());
-//                        TextView email = (TextView) searchDialog.findViewById(R.id.show_search_email);
-//                        email.setText("Email: " + addDeviceModel.getUserEmail());
-//                        TextView model = (TextView) searchDialog.findViewById(R.id.show_search_device_name);
-//                        model.setText("Model: " + addDeviceModel.getDeviceName());
-//                        TextView mac = (TextView) searchDialog.findViewById(R.id.show_search_mac);
-//                        mac.setText("MAC: " + addDeviceModel.getMac());
-//                        TextView status = (TextView) searchDialog.findViewById(R.id.show_search_status);
-//                        status.setText("Status: " + addDeviceModel.getStatus());
-//                        if (addDeviceModel.getStatus().equals("Stolen mode") || addDeviceModel.getStatus().equals("Lost mode")) {
-//                            ((TextView) searchDialog.findViewById(R.id.show_search_status)).setTextColor(Color.parseColor("#FF5252"));
-//                            searchDialog.findViewById(R.id.call_mac_relative).setVisibility(View.VISIBLE);
-//
-//                        } else if (addDeviceModel.getStatus().equals("Safe mode")) {
-//                            ((TextView) searchDialog.findViewById(R.id.show_search_status)).setTextColor(Color.parseColor("#2DC92D"));
-//                        }
-//                        final ImageView image = searchDialog.findViewById(R.id.show_search_image);
-//                        StorageReference storageRef = firebaseStorage.getReference();
-//                        storageRef.child("ProfilePictures/" + addDeviceModel.getUid() + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                            @Override
-//                            public void onSuccess(Uri uri) {
-//                                Glide.with(UserProfileSearch.this).load(uri).into(image);
-//                            }
-//                        });
-//                        Button dialogButton = (Button) searchDialog.findViewById(R.id.show_search_button);
-//                        dialogButton.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                hideProgressBar();
-//                                userSearch.setText("");
-//                                searchDialog.dismiss();
-//                            }
-//                        });
-//                        final RelativeLayout macCallButton = searchDialog.findViewById(R.id.call_mac_relative);
-//                        macCallButton.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                try {
-//                                    Intent my_callIntent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + addDeviceModel.getUserPhone()));
-//                                    //here the word 'tel' is important for making a call...
-//                                    startActivity(my_callIntent);
-//                                } catch (ActivityNotFoundException e) {
-//                                    Toast.makeText(getApplicationContext(), "Error in your phone call" + e.getMessage(), Toast.LENGTH_LONG).show();
-//                                }
-//                            }
-//                        });
-//                        Button claim = searchDialog.findViewById(R.id.claim_mac_ID);
-//                        claim.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-//                                emailIntent.setType("text/plain");
-//                                emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
-//                                        new String[]{  "ownimei19@gmail.com"});
-//                                emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Claim ID: "+addDeviceModel.getMac());
-//                                emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, "Add Message here...");
-//
-//                                emailIntent.setType("message/rfc822");
-//
-//                                try {
-//                                    startActivity(Intent.createChooser(emailIntent,
-//                                            "Send email using..."));
-//                                    userSearch.setText("");
-//                                    StaticClass.hideKeyboard(UserProfileSearch.this);
-//                                } catch (android.content.ActivityNotFoundException ex) {
-//                                    Toast.makeText(UserProfileSearch.this,
-//                                            "No email clients installed.",
-//                                            Toast.LENGTH_SHORT).show();
-//                                }
-//                                hideProgressBar();
-//                                searchDialog.dismiss();
-//                            }
-//                        });
-//                        searchDialog.show();
                     }
                 }
             }
