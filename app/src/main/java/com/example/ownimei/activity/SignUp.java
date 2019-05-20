@@ -268,10 +268,10 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
                                     hideProgressBar();
-                                    Intent intent = new Intent(SignUp.this, SignUpPopUpActivity.class);
-//                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                    startActivity(intent);
                                     auth.signOut();
+                                    Intent intent = new Intent(SignUp.this, SignUpPopUpActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(intent);
                                     finish();
 
                                 } else {

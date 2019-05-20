@@ -44,5 +44,7 @@
     <string name="sign_in_error">Oops! Looks like your email or password is incorrect.</string>
     <string name="delete_notification">You won\'t be abel to restore it.</string>
     <string name="gps_dialog">GPS network not enabled \n Please enable location</string>
+    <string name="imei_find">Please open your dialer pad and dial <![CDATA[ <b><font color=#2DC92D>*#06#</b>]]>  for find IMEI.</string>
+    <string name="imei_open_dialer">Click here to open dialer pad.</string>
 
 </resources>

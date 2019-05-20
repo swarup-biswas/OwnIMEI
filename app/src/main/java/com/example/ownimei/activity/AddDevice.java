@@ -1,14 +1,26 @@
 package com.example.ownimei.activity;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.telecom.TelecomManager;
+import android.telephony.TelephonyManager;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -54,6 +66,7 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
     private TextView addDeviceMode;
     private Button addDeviceButton;
     private String finalAddMode;
+    private TextView checkImeiID;
 
     private DatePickerDialog datePickerDialog;
     //Firebase
@@ -76,6 +89,7 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
     private String phone;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,6 +105,7 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
         addDeviceMAC = findViewById(R.id.add_device_MAC_ID);
         addDevicePurchaseDate = findViewById(R.id.add_device_purchase_date_ID);
         addDeviceMode = findViewById(R.id.add_device_mode_ID);
+        checkImeiID = findViewById(R.id.check_imei_ID);
 
         addDeviceButton = findViewById(R.id.add_device_button_ID);
         addDeviceBackButton = findViewById(R.id.add_device_back_btn);
@@ -104,6 +119,7 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
         addDeviceButton.setOnClickListener(this);
         addDevicePurchaseDate.setOnClickListener(this);
         addDeviceMode.setOnClickListener(this);
+        checkImeiID.setOnClickListener(this);
         // Query start
         addDeviceIMEIOne.addTextChangedListener(new TextWatcher() {
             @Override
@@ -197,8 +213,38 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
             case R.id.add_device_purchase_date_ID:
                 deviceDatePicker();
                 break;
+            case R.id.check_imei_ID:
+                imeiInfo();
+                break;
         }
 
+    }
+
+    private void imeiInfo() {
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.find_imei_from_phone_dialog);
+        TextView textView = dialog.findViewById(R.id.imei_call_ID);
+        Resources res = getResources();
+        String text = String.format(res.getString(R.string.imei_find));
+        CharSequence styledText = Html.fromHtml(text);
+        TextView textView1 = dialog.findViewById(R.id.imei_open_info_ID);
+        textView1.setText(styledText);
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    dialog.dismiss();
+                    Intent my_callIntent = new Intent(Intent.ACTION_DIAL);
+                    my_callIntent.setData(Uri.parse("tel:"));
+                    //here the word 'tel' is important for making a call...
+                    startActivity(my_callIntent);
+                } catch (ActivityNotFoundException e) {
+                    dialog.dismiss();
+                    Toast.makeText(getApplicationContext(), "Error in your phone call" + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        dialog.show();
     }
 
 
@@ -208,7 +254,6 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
         super.onBackPressed();
         addDeviceBackButtonMethod();
     }
-
     private void addDeviceBackButtonMethod() {
         Intent intent2 = new Intent(AddDevice.this, UserProfile.class);
         startActivity(intent2);
@@ -300,6 +345,7 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
                     addDeviceMAC.setVisibility(View.GONE);
                     addDevicePurchaseDate.setVisibility(View.VISIBLE);
                     addDeviceButton.setVisibility(View.VISIBLE);
+                    checkImeiID.setVisibility(View.VISIBLE);
 
                     deviceSelect.setText("Phone");
 
@@ -459,7 +505,7 @@ public class AddDevice extends AppCompatActivity implements View.OnClickListener
                         SharedPreferences sGetUserInfo = getSharedPreferences(USER_INFO, MODE_PRIVATE);
                         String userName = sGetUserInfo.getString("Name", "");
                         String userEmail = sGetUserInfo.getString("Email", "");
-                        phone = sGetUserInfo.getString("Phone","");
+                        phone = sGetUserInfo.getString("Phone", "");
                         SharedPreferences sGetUID = getSharedPreferences(USER_ID, MODE_PRIVATE);
                         String userId = sGetUID.getString("get_UID", "");
                         //Adding data to fire store

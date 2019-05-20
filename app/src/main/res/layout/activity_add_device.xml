@@ -183,6 +183,16 @@
                                 android:text="Save"
                                 android:textColor="@color/colorPrimaryYellow"
                                 android:textSize="18sp" />
+                            <TextView
+                                android:visibility="gone"
+                                android:id="@+id/check_imei_ID"
+                                android:layout_marginTop="15dp"
+                                android:gravity="center"
+                                android:layout_below="@+id/add_device_button_ID"
+                                android:layout_width="match_parent"
+                                android:layout_height="20dp"
+                                android:textColor="@color/colorGreen"
+                                android:text="How to find IMEI?"/>
 
                         </RelativeLayout>
                     </LinearLayout>
