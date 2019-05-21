@@ -125,7 +125,7 @@ public class ShowSearchResultActivity extends AppCompatActivity implements View.
         storageRef.child("ProfilePictures/" + uid + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                Glide.with(ShowSearchResultActivity.this).load(uri).into(showSearchImage);
+                Glide.with(getApplicationContext()).load(uri).into(showSearchImage);
             }
         });
     }

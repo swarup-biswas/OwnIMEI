@@ -9,11 +9,14 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.ownimei.R;
@@ -30,6 +33,8 @@ import com.google.android.gms.tasks.Task;
 
 public class DevicePosition extends AppCompatActivity implements OnMapReadyCallback {
 
+    private ImageView positionBackButton;
+    private FloatingActionButton reloadMap;
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
@@ -43,6 +48,14 @@ public class DevicePosition extends AppCompatActivity implements OnMapReadyCallb
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_position);
+        positionBackButton = findViewById(R.id.current_position_back_button);
+        reloadMap = findViewById(R.id.reload_map_ID);
+        reloadMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onResume();
+            }
+        });
         getLocationPermission();
     }
 
@@ -57,6 +70,17 @@ public class DevicePosition extends AppCompatActivity implements OnMapReadyCallb
             }
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
 
+        }
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+
+        if(mMap != null){
+            mMap.clear();
+            initMap();
+            getDeviceLocation();
         }
     }
     private void initMap() {
@@ -128,6 +152,10 @@ public class DevicePosition extends AppCompatActivity implements OnMapReadyCallb
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         mLocationPermissonGranted = false;
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    public void backButton(View view) {
+        onBackPressed();
     }
 
 }

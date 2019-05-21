@@ -94,9 +94,6 @@
             android:name=".activity.ForgotPasswordInputMailOrPhone"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.PhoneOrMailVerification"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".activity.UserProfile"
             android:screenOrientation="portrait"
             android:theme="@style/MyTheme"/>

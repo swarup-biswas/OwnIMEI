@@ -31,6 +31,7 @@ import com.example.ownimei.R;
 import com.example.ownimei.StaticClass.StaticClass;
 import com.example.ownimei.pojo.SignUpModel;
 import com.example.ownimei.pojo.UserModeModel;
+import com.example.ownimei.popUp.SignUpPopUpActivity;
 import com.facebook.accountkit.AccessToken;
 import com.facebook.accountkit.Account;
 import com.facebook.accountkit.AccountKit;
@@ -80,7 +81,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     private CircleImageView changeImage;
     private ImageView editBackButton;
     private ImageView editSaveButton;
-    private EditText editEmail;
+//    private EditText editEmail;
     private EditText editName;
     private CardView changePassword;
 
@@ -91,7 +92,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     private String phoneNumber1;
     private String phone;
     private ImageView nameButton;
-    private ImageView emailButton;
+//    private ImageView emailButton;
 
     //Firebase
     private FirebaseAuth authOwner;
@@ -125,15 +126,15 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         setContentView(R.layout.activity_edit_profile);
 
         authOwner = FirebaseAuth.getInstance();
-        user = FirebaseAuth.getInstance().getCurrentUser();
+        user = authOwner.getCurrentUser();
         db = FirebaseFirestore.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
 
         //Account kit test
         nameButton = findViewById(R.id.iv_name_ok_button);
         nameButton.setOnClickListener(this);
-        emailButton = findViewById(R.id.iv_email_ok_button);
-        emailButton.setOnClickListener(this);
+//        emailButton = findViewById(R.id.iv_email_ok_button);
+//        emailButton.setOnClickListener(this);
         etPhone = findViewById(R.id.edit_phone_ID);
         ivPhoneOk = findViewById(R.id.iv_phone_ok_button);
         ivPhoneOk.setOnClickListener(this);
@@ -142,7 +143,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         changeImage = findViewById(R.id.edit_image_ID);
         editBackButton = findViewById(R.id.edit_back_btn);
         editSaveButton = findViewById(R.id.edit_save_ID);
-        editEmail = findViewById(R.id.edit_email_ID);
+//        editEmail = findViewById(R.id.edit_email_ID);
         editName = findViewById(R.id.edit_name_ID);
         changePassword = findViewById(R.id.change_password_ID);
         changeImage.setOnClickListener(this);
@@ -160,7 +161,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         userEmail = sGetUserInfo.getString("Email", "");
         userPhone = sGetUserInfo.getString("Phone", "");
         pass = sGetUserInfo.getString("Password", "");
-        editEmail.setText(userEmail);
+//        editEmail.setText(userEmail);
         editName.setText(userName);
         etPhone.setText(userPhone);
 
@@ -173,7 +174,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onSuccess(Uri uri) {
                 hideProgressBar();
-                Glide.with(EditProfileActivity.this).load(uri).into(changeImage);
+                Glide.with(getApplicationContext()).load(uri).into(changeImage);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -200,9 +201,9 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
             case R.id.iv_name_ok_button:
                 editNameSaveMethod();
                 break;
-            case R.id.iv_email_ok_button:
-                editEmailSaveMethod();
-                break;
+//            case R.id.iv_email_ok_button:
+//                editEmailSaveMethod();
+//                break;
             case R.id.edit_image_ID:
                 changeImageMethod();
                 break;
@@ -228,13 +229,13 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     }
 
 
-    private void editEmailSaveMethod() {
-        if (!StaticClass.isConnected(this)) {
-            StaticClass.buildDialog(this);
-        } else {
-            changeEmailMethod();
-        }
-    }
+//    private void editEmailSaveMethod() {
+//        if (!StaticClass.isConnected(this)) {
+//            StaticClass.buildDialog(this);
+//        } else {
+//            changeEmailMethod();
+//        }
+//    }
 
     private void editNameSaveMethod() {
         if (!StaticClass.isConnected(this)) {
@@ -422,135 +423,163 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-    private void changeEmailMethod() {
-        email = editEmail.getText().toString().trim();
-        showProgressBar();
-        if (email.isEmpty()) {
-            hideProgressBar();
-            AlertDialog.Builder builder = new AlertDialog.Builder(EditProfileActivity.this);
-            builder.setMessage("Please enter your email");
-            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-
-                }
-            });
-            builder.show();
-            return;
-        }
-
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            hideProgressBar();
-            AlertDialog.Builder builder = new AlertDialog.Builder(EditProfileActivity.this);
-            builder.setMessage("Please enter your valid email");
-            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-
-                }
-            });
-            builder.show();
-            return;
-        }
-        Log.d("SharedPreEmail", "" + userEmail);
-        if (!userEmail.equals(email)) {
-            emailUser = FirebaseAuth.getInstance().getCurrentUser();
-            showProgressBar();
-            CollectionReference deviceInfoCollection = db.collection("UserInformations");
-            Query query = deviceInfoCollection.whereEqualTo("userEmail", email);
-            query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                @Override
-                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        SignUpModel userInformation = new SignUpModel();
-                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                            userInformation.setUserEmail(document.getString("userEmail"));
-                        }
-                        String searchEmail = userInformation.getUserEmail();
-                        Log.d("SearchEmail12", "" + searchEmail);
-                        if (searchEmail.isEmpty()) {
-                            showProgressBar();
-                            emailUser.updateEmail(email)
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                hideProgressBar();
-                                                SharedPreferences sharedPreferences = getSharedPreferences(USER_INFO, MODE_PRIVATE);
-                                                SharedPreferences.Editor editorUserInfo = sharedPreferences.edit();
-                                                editorUserInfo.putString("Email", email);
-                                                editorUserInfo.apply();
-                                                Toast.makeText(EditProfileActivity.this, "Update Success", Toast.LENGTH_SHORT).show();
-                                                //  startActivity(new Intent(EditProfileActivity.this, UserProfile.class));
-
-                                            }
-                                        }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    hideProgressBar();
-                                    Toast.makeText(EditProfileActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
-
-                                }
-                            });
-                        } else {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(EditProfileActivity.this);
-                            builder.setMessage("This email '" + searchEmail + "' already exist.");
-                            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    hideProgressBar();
-                                }
-                            });
-                            AlertDialog alertDialog = builder.create();
-                            alertDialog.show();
-
-                        }
-                    } else {
-                        showProgressBar();
-                        emailUser.updateEmail(email)
-                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            hideProgressBar();
-                                            SharedPreferences sharedPreferences = getSharedPreferences(USER_INFO, MODE_PRIVATE);
-                                            SharedPreferences.Editor editorUserInfo = sharedPreferences.edit();
-                                            editorUserInfo.putString("Email", email);
-                                            editorUserInfo.apply();
-                                            //TODO without verification you can not sign in
-                                            //TODO please check your email for verification
-                                            Toast.makeText(EditProfileActivity.this, "Update Success", Toast.LENGTH_SHORT).show();
-                                            //           startActivity(new Intent(EditProfileActivity.this, UserProfile.class));
-
-                                        }
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                hideProgressBar();
-                                AlertDialog.Builder builder = new AlertDialog.Builder(EditProfileActivity.this);
-                                builder.setMessage("At first sign out \nThen sign in again for email change.");
-                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-
-                                    }
-                                });
-                                builder.show();
-
-
-                            }
-                        });
-                    }
-
-                }
-            });
-        } else {
-            hideProgressBar();
-            Toast.makeText(EditProfileActivity.this, "Mail same!", Toast.LENGTH_LONG).show();
-        }
-    }
+//    private void changeEmailMethod() {
+//
+//        //TODO recheck the hole email update system including handel share preference
+//
+//        email = editEmail.getText().toString().trim();
+//        showProgressBar();
+//        if (email.isEmpty()) {
+//            hideProgressBar();
+//            AlertDialog.Builder builder = new AlertDialog.Builder(EditProfileActivity.this);
+//            builder.setMessage("Please enter your email");
+//            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialog, int which) {
+//
+//                }
+//            });
+//            builder.show();
+//            return;
+//        }
+//
+//        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+//            hideProgressBar();
+//            AlertDialog.Builder builder = new AlertDialog.Builder(EditProfileActivity.this);
+//            builder.setMessage("Please enter your valid email");
+//            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialog, int which) {
+//
+//                }
+//            });
+//            builder.show();
+//            return;
+//        }
+//        Log.d("SharedPreEmail", "" + userEmail);
+//        if (!userEmail.equals(email)) {
+//            emailUser = FirebaseAuth.getInstance().getCurrentUser();
+//            showProgressBar();
+//            CollectionReference deviceInfoCollection = db.collection("UserInformations");
+//            Query query = deviceInfoCollection.whereEqualTo("userEmail", email);
+//            query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+//                @Override
+//                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+//                    if (!queryDocumentSnapshots.isEmpty()) {
+//                        SignUpModel userInformation = new SignUpModel();
+//                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+//                            userInformation.setUserEmail(document.getString("userEmail"));
+//                        }
+//                        String searchEmail = userInformation.getUserEmail();
+//                        Log.d("SearchEmail12", "" + searchEmail);
+//                        if (searchEmail.isEmpty()) {
+//                            showProgressBar();
+//                            emailUser.updateEmail(email)
+//                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                        @Override
+//                                        public void onComplete(@NonNull Task<Void> task) {
+//                                            if (task.isSuccessful()) {
+//                                                hideProgressBar();
+//                                                SharedPreferences sharedPreferences = getSharedPreferences(USER_INFO, MODE_PRIVATE);
+//                                                SharedPreferences.Editor editorUserInfo = sharedPreferences.edit();
+//                                                editorUserInfo.putString("Email", email);
+//                                                editorUserInfo.apply();
+//                                                Toast.makeText(EditProfileActivity.this, "Update Success", Toast.LENGTH_SHORT).show();
+//                                                //  startActivity(new Intent(EditProfileActivity.this, UserProfile.class));
+//
+//                                            }
+//                                        }
+//                                    }).addOnFailureListener(new OnFailureListener() {
+//                                @Override
+//                                public void onFailure(@NonNull Exception e) {
+//                                    hideProgressBar();
+//                                    Toast.makeText(EditProfileActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+//
+//                                }
+//                            });
+//                        } else {
+//                            AlertDialog.Builder builder = new AlertDialog.Builder(EditProfileActivity.this);
+//                            builder.setMessage("This email '" + searchEmail + "' already exist.");
+//                            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                    hideProgressBar();
+//                                }
+//                            });
+//                            AlertDialog alertDialog = builder.create();
+//                            alertDialog.show();
+//
+//                        }
+//                    } else {
+//                        showProgressBar();
+//                        emailUser.updateEmail(email)
+//                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                    @Override
+//                                    public void onComplete(@NonNull Task<Void> task) {
+//                                        if (task.isSuccessful()) {
+//                                            hideProgressBar();
+//                                            SharedPreferences sharedPreferences = getSharedPreferences(USER_INFO, MODE_PRIVATE);
+//                                            SharedPreferences.Editor editorUserInfo = sharedPreferences.edit();
+//                                            editorUserInfo.putString("Email", email);
+//                                            editorUserInfo.apply();
+//                                            user.sendEmailVerification()
+//                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                                        @Override
+//                                                        public void onComplete(@NonNull Task<Void> task) {
+//                                                            if (task.isSuccessful()) {
+//                                                                hideProgressBar();
+//                                                                authOwner.signOut();
+//                                                                SharedPreferences sharedPreferencesToken = getSharedPreferences(SIGN_UP_TOKEN, MODE_PRIVATE);
+//                                                                SharedPreferences sharedPreferencesDelete = getSharedPreferences(USER_ID, MODE_PRIVATE);
+//                                                                SharedPreferences sGetUserInfo = getSharedPreferences(USER_INFO, MODE_PRIVATE);
+//                                                                sharedPreferencesDelete.edit().clear().apply();
+//                                                                sharedPreferencesToken.edit().clear().apply();
+//                                                                sGetUserInfo.edit().clear().apply();
+//                                                                Intent intent = new Intent(EditProfileActivity.this, SignUpPopUpActivity.class);
+//                                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                                                                startActivity(intent);
+//                                                                finish();
+//                                                            }
+//                                                        }
+//                                                    }).addOnFailureListener(new OnFailureListener() {
+//                                                @Override
+//                                                public void onFailure(@NonNull Exception e) {
+//                                                    hideProgressBar();
+//                                                    Toast.makeText(EditProfileActivity.this,""+e.getMessage(),
+//                                                            Toast.LENGTH_SHORT).show();
+//                                                }
+//                                            });
+////                                            Toast.makeText(EditProfileActivity.this, "Update Success", Toast.LENGTH_SHORT).show();
+//                                            //           startActivity(new Intent(EditProfileActivity.this, UserProfile.class));
+//
+//                                        }
+//                                    }
+//                                }).addOnFailureListener(new OnFailureListener() {
+//                            @Override
+//                            public void onFailure(@NonNull Exception e) {
+//                                hideProgressBar();
+//                                AlertDialog.Builder builder = new AlertDialog.Builder(EditProfileActivity.this);
+//                                builder.setMessage("At first sign out \nThen sign in again for email change.");
+//                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(DialogInterface dialog, int which) {
+//
+//                                    }
+//                                });
+//                                builder.show();
+//
+//
+//                            }
+//                        });
+//                    }
+//
+//                }
+//            });
+//        } else {
+//            hideProgressBar();
+//            Toast.makeText(EditProfileActivity.this, "Mail same!", Toast.LENGTH_LONG).show();
+//        }
+//    }
 
     //Edit photo start
     private void changeImageMethod() {
@@ -590,7 +619,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
             if (loginResult.getError() != null) {
                 Toast.makeText(EditProfileActivity.this, "Error", Toast.LENGTH_SHORT).show();
             } else if (loginResult.wasCancelled()) {
-                Toast.makeText(EditProfileActivity.this, "Login Cancelled", Toast.LENGTH_LONG).show();
+                Toast.makeText(EditProfileActivity.this, "Cancelled", Toast.LENGTH_LONG).show();
             } else {
                 if (loginResult.getAccessToken() != null) {
                     Toast.makeText(EditProfileActivity.this, "Success", Toast.LENGTH_LONG).show();

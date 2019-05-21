@@ -46,3 +46,4 @@ public class SignUpPopUpActivity extends AppCompatActivity {
         getWindow().setAttributes(params);
     }
 }
+

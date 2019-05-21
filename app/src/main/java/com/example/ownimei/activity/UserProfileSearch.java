@@ -108,7 +108,7 @@ public class UserProfileSearch extends AppCompatActivity implements View.OnClick
             @Override
             public void onSuccess(Uri uri) {
                 hideProgressBar();
-                Glide.with(UserProfileSearch.this).load(uri).into(circleImageView);
+                Glide.with(getApplicationContext()).load(uri).into(circleImageView);
             }
         });
     }

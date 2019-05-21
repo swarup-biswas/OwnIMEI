@@ -249,22 +249,13 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
         if (!StaticClass.isConnected(this)) {
             StaticClass.buildDialog(this).show();
         } else {
-//            Intent positionIntent = new Intent(UserProfile.this, DevicePosition.class);
-//            startActivity(positionIntent);
-
             //Location enable start
-
             LocationManager lm = (LocationManager)UserProfile.this.getSystemService(Context.LOCATION_SERVICE);
             boolean gps_enabled = false;
-//            boolean network_enabled = false;
 
             try {
                 gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
             } catch(Exception ex) {}
-
-//            try {
-//                network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-//            } catch(Exception ex) {}
 
             if(!gps_enabled) {
                 // notify user
@@ -302,7 +293,7 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
             @Override
             public void onSuccess(Uri uri) {
                 hideProgressBar();
-                Glide.with(UserProfile.this).load(uri).into((ImageView) imageViewDialog.findViewById(R.id.full_image_ID));
+                Glide.with(getApplicationContext()).load(uri).into((ImageView) imageViewDialog.findViewById(R.id.full_image_ID));
 
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -397,8 +388,8 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
             @Override
             public void onSuccess(Uri uri) {
                 hideProgressBar();
-                Glide.with(UserProfile.this).load(uri).into(profileImage);
-                Glide.with(UserProfile.this).load(uri).into(drawerImage);
+                Glide.with(getApplicationContext()).load(uri).into(profileImage);
+                Glide.with(getApplicationContext()).load(uri).into(drawerImage);
 
             }
         });
