@@ -72,11 +72,13 @@
                             android:orientation="horizontal">
 
                             <ImageView
+                                android:gravity="center_vertical"
                                 android:layout_width="20dp"
-                                android:layout_height="20dp"
+                                android:layout_height="wrap_content"
                                 android:src="@drawable/ic_edit_profile_dr" />
 
                             <TextView
+                                android:gravity="center_vertical"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="20dp"
@@ -98,11 +100,13 @@
                             android:orientation="horizontal">
 
                             <ImageView
+                                android:gravity="center_vertical"
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_add_device_dr" />
 
                             <TextView
+                                android:gravity="center_vertical"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="20dp"
@@ -125,11 +129,13 @@
                             android:orientation="horizontal">
 
                             <ImageView
+                                android:gravity="center_vertical"
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_search_dr" />
 
                             <TextView
+                                android:gravity="center_vertical"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="20dp"
@@ -176,11 +182,13 @@
                             android:orientation="horizontal">
 
                             <ImageView
+                                android:gravity="center_vertical"
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_device_position_dr" />
 
                             <TextView
+                                android:gravity="center_vertical"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="20dp"
@@ -229,11 +237,13 @@
                             android:orientation="horizontal">
 
                             <ImageView
+                                android:gravity="center_vertical"
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_help_dr" />
 
                             <TextView
+                                android:gravity="center_vertical"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="20dp"
@@ -257,11 +267,13 @@
                             android:orientation="horizontal">
 
                             <ImageView
+                                android:gravity="center_vertical"
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_about_dr" />
 
                             <TextView
+                                android:gravity="center_vertical"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="20dp"
@@ -284,11 +296,13 @@
                             android:orientation="horizontal">
 
                             <ImageView
+                                android:gravity="center_vertical"
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_signout_dr" />
 
                             <TextView
+                                android:gravity="center_vertical"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="20dp"

@@ -250,14 +250,15 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
             StaticClass.buildDialog(this).show();
         } else {
             //Location enable start
-            LocationManager lm = (LocationManager)UserProfile.this.getSystemService(Context.LOCATION_SERVICE);
+            LocationManager lm = (LocationManager) UserProfile.this.getSystemService(Context.LOCATION_SERVICE);
             boolean gps_enabled = false;
 
             try {
                 gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            } catch(Exception ex) {}
+            } catch (Exception ex) {
+            }
 
-            if(!gps_enabled) {
+            if (!gps_enabled) {
                 // notify user
                 new AlertDialog.Builder(UserProfile.this)
                         .setMessage(R.string.gps_dialog)
@@ -272,7 +273,7 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
                         dialog.dismiss();
                     }
                 }).setCancelable(false).show();
-            }else {
+            } else {
                 Intent positionIntent = new Intent(UserProfile.this, DevicePosition.class);
                 startActivity(positionIntent);
             }
@@ -379,7 +380,7 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
 
         return options;
     }
-//    //User profile image end
+    //User profile image end
 
     //User information load from firebase start
     private void loadUserInformation() {
@@ -396,11 +397,11 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
         SharedPreferences sGetUserInfo = getSharedPreferences(USER_INFO, MODE_PRIVATE);
         String userName = sGetUserInfo.getString("Name", "");
         String userEmail = sGetUserInfo.getString("Email", "");
-        String userPhone = sGetUserInfo.getString("Phone","");
+        String userPhone = sGetUserInfo.getString("Phone", "");
         ownerNameId.setText(userName);
         drawerName.setText(userName);
         emailId.setText(userEmail);
-        if (userPhone!=null){
+        if (userPhone != null) {
             ownerPhone.setVisibility(View.VISIBLE);
             ownerPhone.setText(userPhone);
         }
@@ -424,7 +425,6 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
                     adddeviceModelList.add(addDeviceModel);
                 }
 
-
                 //After sign up add device information
                 if (adddeviceModelList.size() == 0) {
                     hideProgressBar();
@@ -440,19 +440,15 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
                     builder.show();
                 }
 
-
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(UserProfile.this, LinearLayoutManager.VERTICAL, false);
                 recyclerView.setLayoutManager(linearLayoutManager);
                 AddDeviceAdapter adapter = new AddDeviceAdapter(adddeviceModelList, UserProfile.this);
                 recyclerView.setAdapter(adapter);
-
-
             }
         });
     }
 
     //User information load from firebase end
-
     private void searchMenu() {
         Intent searchMenuIntent = new Intent(UserProfile.this, UserProfileSearch.class);
         startActivity(searchMenuIntent);
