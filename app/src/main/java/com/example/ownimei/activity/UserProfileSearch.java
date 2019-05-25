@@ -31,6 +31,7 @@ import com.bumptech.glide.Glide;
 import com.example.ownimei.R;
 import com.example.ownimei.StaticClass.StaticClass;
 import com.example.ownimei.pojo.AddDeviceModel;
+import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -53,15 +54,13 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static com.example.ownimei.activity.SignUp.USER_ID;
 
 public class UserProfileSearch extends AppCompatActivity implements View.OnClickListener {
-    //    private ImageView backButton;
+
     private EditText userSearch;
     private Button userSearchButton;
     private CircleImageView circleImageView;
     private FirebaseAuth authOwner;
     private FirebaseFirestore db;
     private FirebaseStorage firebaseStorage;
-    int x;
-    int y;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,7 +106,6 @@ public class UserProfileSearch extends AppCompatActivity implements View.OnClick
         storageRef.child("ProfilePictures/" + uId + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                hideProgressBar();
                 Glide.with(getApplicationContext()).load(uri).into(circleImageView);
             }
         });
@@ -127,14 +125,25 @@ public class UserProfileSearch extends AppCompatActivity implements View.OnClick
     }
 
     private void searchIMEI() {
-        if (!StaticClass.isConnected(UserProfileSearch.this)){
+        if (!StaticClass.isConnected(UserProfileSearch.this)) {
             StaticClass.buildDialog(UserProfileSearch.this);
             return;
         }
-        String inputImei = userSearch.getText().toString();
+        final String inputImei = userSearch.getText().toString();
         if (inputImei.isEmpty()) {
             AlertDialog.Builder builder1 = new AlertDialog.Builder(UserProfileSearch.this);
-            builder1.setMessage("Please input IMEI!").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            builder1.setMessage("Please enter IMEI!").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            builder1.show();
+            return;
+        }
+        if (inputImei.length() < 10) {
+            AlertDialog.Builder builder1 = new AlertDialog.Builder(UserProfileSearch.this);
+            builder1.setMessage("Please enter valid IMEI/MAC!").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
 
@@ -144,17 +153,14 @@ public class UserProfileSearch extends AppCompatActivity implements View.OnClick
             return;
         }
         showProgressBar();
-        CollectionReference deviceInfoCollection = db.collection("DeviceInfo");
+        final CollectionReference deviceInfoCollection = db.collection("DeviceInfo");
         Query query = deviceInfoCollection.whereEqualTo("phoneImeiOne", inputImei);
-        Query queryTwoIMEI = deviceInfoCollection.whereEqualTo("phoneImeiTwo", inputImei);
-        Query queryMac = deviceInfoCollection.whereEqualTo("mac", inputImei);
         final AddDeviceModel addDeviceModel = new AddDeviceModel();
 //IMEI 1
         query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 if (!queryDocumentSnapshots.isEmpty()) {
-                    x = 1;
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         hideProgressBar();
                         addDeviceModel.setUserName(document.getString("userName"));
@@ -165,107 +171,188 @@ public class UserProfileSearch extends AppCompatActivity implements View.OnClick
                         addDeviceModel.setUid(document.getString("uid"));
                         addDeviceModel.setUserPhone(document.getString("userPhone"));
 
-                        Intent intentHomeIMEI1 = new Intent(UserProfileSearch.this,ShowSearchResultActivity.class);
-                        intentHomeIMEI1.putExtra("userName",addDeviceModel.getUserName());
-                        intentHomeIMEI1.putExtra("userEmail",addDeviceModel.getUserEmail());
-                        intentHomeIMEI1.putExtra("phoneImeiOne",addDeviceModel.getPhoneImeiOne());
-                        intentHomeIMEI1.putExtra("deviceName",addDeviceModel.getDeviceName());
-                        intentHomeIMEI1.putExtra("status",addDeviceModel.getStatus());
-                        intentHomeIMEI1.putExtra("uid",addDeviceModel.getUid());
-                        intentHomeIMEI1.putExtra("userPhone",addDeviceModel.getUserPhone());
+                        Intent intentHomeIMEI1 = new Intent(UserProfileSearch.this, ShowSearchResultActivity.class);
+                        intentHomeIMEI1.putExtra("userName", addDeviceModel.getUserName());
+                        intentHomeIMEI1.putExtra("userEmail", addDeviceModel.getUserEmail());
+                        intentHomeIMEI1.putExtra("phoneImeiOne", addDeviceModel.getPhoneImeiOne());
+                        intentHomeIMEI1.putExtra("deviceName", addDeviceModel.getDeviceName());
+                        intentHomeIMEI1.putExtra("status", addDeviceModel.getStatus());
+                        intentHomeIMEI1.putExtra("uid", addDeviceModel.getUid());
+                        intentHomeIMEI1.putExtra("userPhone", addDeviceModel.getUserPhone());
                         startActivity(intentHomeIMEI1);
                         finish();
                     }
-                }
+                } else {
+                    CollectionReference deviceInfoCollection = db.collection("DeviceInfo");
+                    Query queryTwoIMEI = deviceInfoCollection.whereEqualTo("phoneImeiTwo", inputImei);
+                    queryTwoIMEI.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            if (!queryDocumentSnapshots.isEmpty()) {
+                                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                                    hideProgressBar();
+                                    addDeviceModel.setUserName(document.getString("userName"));
+                                    addDeviceModel.setUserEmail(document.getString("userEmail"));
+                                    addDeviceModel.setPhoneImeiTwo(document.getString("phoneImeiTwo"));
+                                    addDeviceModel.setDeviceName(document.getString("deviceName"));
+                                    addDeviceModel.setStatus(document.getString("status"));
+                                    addDeviceModel.setUid(document.getString("uid"));
+                                    addDeviceModel.setUserPhone(document.getString("userPhone"));
 
+                                    Intent intentHomeIMEI2 = new Intent(UserProfileSearch.this, ShowSearchResultActivity.class);
+                                    intentHomeIMEI2.putExtra("userName", addDeviceModel.getUserName());
+                                    intentHomeIMEI2.putExtra("userEmail", addDeviceModel.getUserEmail());
+                                    intentHomeIMEI2.putExtra("phoneImeiTwo", addDeviceModel.getPhoneImeiTwo());
+                                    intentHomeIMEI2.putExtra("deviceName", addDeviceModel.getDeviceName());
+                                    intentHomeIMEI2.putExtra("status", addDeviceModel.getStatus());
+                                    intentHomeIMEI2.putExtra("uid", addDeviceModel.getUid());
+                                    intentHomeIMEI2.putExtra("userPhone", addDeviceModel.getUserPhone());
+                                    startActivity(intentHomeIMEI2);
+                                    finish();
+                                }
+                            } else {
+                                CollectionReference deviceInfoCollection = db.collection("DeviceInfo");
+                                Query queryMac = deviceInfoCollection.whereEqualTo("mac", inputImei);
+                                queryMac.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                        if (!queryDocumentSnapshots.isEmpty()) {
+                                            for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                                                hideProgressBar();
+                                                addDeviceModel.setUserName(document.getString("userName"));
+                                                addDeviceModel.setUserEmail(document.getString("userEmail"));
+                                                addDeviceModel.setMac(document.getString("mac"));
+                                                addDeviceModel.setDeviceName(document.getString("deviceName"));
+                                                addDeviceModel.setStatus(document.getString("status"));
+                                                addDeviceModel.setUid(document.getString("uid"));
+                                                addDeviceModel.setUserPhone(document.getString("userPhone"));
+
+                                                Intent intentHomeMAC = new Intent(UserProfileSearch.this, ShowSearchResultActivity.class);
+                                                intentHomeMAC.putExtra("userName", addDeviceModel.getUserName());
+                                                intentHomeMAC.putExtra("userEmail", addDeviceModel.getUserEmail());
+                                                intentHomeMAC.putExtra("mac", addDeviceModel.getMac());
+                                                intentHomeMAC.putExtra("deviceName", addDeviceModel.getDeviceName());
+                                                intentHomeMAC.putExtra("status", addDeviceModel.getStatus());
+                                                intentHomeMAC.putExtra("uid", addDeviceModel.getUid());
+                                                intentHomeMAC.putExtra("userPhone", addDeviceModel.getUserPhone());
+                                                startActivity(intentHomeMAC);
+                                                finish();
+                                            }
+                                        } else {
+                                            hideProgressBar();
+                                            Toast.makeText(UserProfileSearch.this, "Opps!! Entered address Not found", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        hideProgressBar();
+                                        Toast.makeText(UserProfileSearch.this, "Request Failed, Please try again", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            hideProgressBar();
+                            Toast.makeText(UserProfileSearch.this, "Request Failed, Please try again", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 hideProgressBar();
+                Toast.makeText(UserProfileSearch.this, "Request Failed, Please try again", Toast.LENGTH_SHORT).show();
             }
         });
 //IMEI 2
-        queryTwoIMEI.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                if (!queryDocumentSnapshots.isEmpty()) {
-                    y = 2;
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        hideProgressBar();
-                        addDeviceModel.setUserName(document.getString("userName"));
-                        addDeviceModel.setUserEmail(document.getString("userEmail"));
-//                        addDeviceModel.setPhoneImeiOne(document.getString("phoneImeiTwo"));
-                        addDeviceModel.setPhoneImeiTwo(document.getString("phoneImeiTwo"));
-                        addDeviceModel.setDeviceName(document.getString("deviceName"));
-                        addDeviceModel.setStatus(document.getString("status"));
-                        addDeviceModel.setUid(document.getString("uid"));
-                        addDeviceModel.setUserPhone(document.getString("userPhone"));
-
-                        Intent intentHomeIMEI2 = new Intent(UserProfileSearch.this,ShowSearchResultActivity.class);
-                        intentHomeIMEI2.putExtra("userName",addDeviceModel.getUserName());
-                        intentHomeIMEI2.putExtra("userEmail",addDeviceModel.getUserEmail());
-                        intentHomeIMEI2.putExtra("phoneImeiTwo",addDeviceModel.getPhoneImeiTwo());
-                        intentHomeIMEI2.putExtra("deviceName",addDeviceModel.getDeviceName());
-                        intentHomeIMEI2.putExtra("status",addDeviceModel.getStatus());
-                        intentHomeIMEI2.putExtra("uid",addDeviceModel.getUid());
-                        intentHomeIMEI2.putExtra("userPhone",addDeviceModel.getUserPhone());
-                        startActivity(intentHomeIMEI2);
-                        finish();
-                    }
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                hideProgressBar();
-//                Toast.makeText(UserProfileSearch.this, "Opps!! IMEI Not found", Toast.LENGTH_SHORT).show();
-            }
-        });
+//        Query queryTwoIMEI = deviceInfoCollection.whereEqualTo("phoneImeiTwo", inputImei);
+//        queryTwoIMEI.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+//            @Override
+//            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+//                if (!queryDocumentSnapshots.isEmpty()) {
+//                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+//                        hideProgressBar();
+//                        addDeviceModel.setUserName(document.getString("userName"));
+//                        addDeviceModel.setUserEmail(document.getString("userEmail"));
+////                        addDeviceModel.setPhoneImeiOne(document.getString("phoneImeiTwo"));
+//                        addDeviceModel.setPhoneImeiTwo(document.getString("phoneImeiTwo"));
+//                        addDeviceModel.setDeviceName(document.getString("deviceName"));
+//                        addDeviceModel.setStatus(document.getString("status"));
+//                        addDeviceModel.setUid(document.getString("uid"));
+//                        addDeviceModel.setUserPhone(document.getString("userPhone"));
+//
+//                        Intent intentHomeIMEI2 = new Intent(UserProfileSearch.this, ShowSearchResultActivity.class);
+//                        intentHomeIMEI2.putExtra("userName", addDeviceModel.getUserName());
+//                        intentHomeIMEI2.putExtra("userEmail", addDeviceModel.getUserEmail());
+//                        intentHomeIMEI2.putExtra("phoneImeiTwo", addDeviceModel.getPhoneImeiTwo());
+//                        intentHomeIMEI2.putExtra("deviceName", addDeviceModel.getDeviceName());
+//                        intentHomeIMEI2.putExtra("status", addDeviceModel.getStatus());
+//                        intentHomeIMEI2.putExtra("uid", addDeviceModel.getUid());
+//                        intentHomeIMEI2.putExtra("userPhone", addDeviceModel.getUserPhone());
+//                        startActivity(intentHomeIMEI2);
+//                        finish();
+//                    }
+//                } else {
+//                    hideProgressBar();
+//                }
+//            }
+//        }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//                hideProgressBar();
+//                Toast.makeText(UserProfileSearch.this,"Request Failed, Please try again",Toast.LENGTH_SHORT).show();
+//            }
+//        });
 //Mac
-        queryMac.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                if (!queryDocumentSnapshots.isEmpty()) {
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        hideProgressBar();
-                        addDeviceModel.setUserName(document.getString("userName"));
-                        addDeviceModel.setUserEmail(document.getString("userEmail"));
-                        addDeviceModel.setMac(document.getString("mac"));
-                        addDeviceModel.setDeviceName(document.getString("deviceName"));
-                        addDeviceModel.setStatus(document.getString("status"));
-                        addDeviceModel.setUid(document.getString("uid"));
-                        addDeviceModel.setUserPhone(document.getString("userPhone"));
-
-                        Intent intentHomeMAC = new Intent(UserProfileSearch.this,ShowSearchResultActivity.class);
-                        intentHomeMAC.putExtra("userName",addDeviceModel.getUserName());
-                        intentHomeMAC.putExtra("userEmail",addDeviceModel.getUserEmail());
-                        intentHomeMAC.putExtra("mac",addDeviceModel.getMac());
-                        intentHomeMAC.putExtra("deviceName",addDeviceModel.getDeviceName());
-                        intentHomeMAC.putExtra("status",addDeviceModel.getStatus());
-                        intentHomeMAC.putExtra("uid",addDeviceModel.getUid());
-                        intentHomeMAC.putExtra("userPhone",addDeviceModel.getUserPhone());
-                        startActivity(intentHomeMAC);
-                        finish();
-                    }
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                hideProgressBar();
-                if (x != 1 && y != 2) {
-                    Toast.makeText(UserProfileSearch.this, "Opps!! Entered address Not found", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
+//        Query queryMac = deviceInfoCollection.whereEqualTo("mac", inputImei);
+//        queryMac.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+//            @Override
+//            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+//                if (!queryDocumentSnapshots.isEmpty()) {
+//                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+//                        hideProgressBar();
+//                        addDeviceModel.setUserName(document.getString("userName"));
+//                        addDeviceModel.setUserEmail(document.getString("userEmail"));
+//                        addDeviceModel.setMac(document.getString("mac"));
+//                        addDeviceModel.setDeviceName(document.getString("deviceName"));
+//                        addDeviceModel.setStatus(document.getString("status"));
+//                        addDeviceModel.setUid(document.getString("uid"));
+//                        addDeviceModel.setUserPhone(document.getString("userPhone"));
+//
+//                        Intent intentHomeMAC = new Intent(UserProfileSearch.this, ShowSearchResultActivity.class);
+//                        intentHomeMAC.putExtra("userName", addDeviceModel.getUserName());
+//                        intentHomeMAC.putExtra("userEmail", addDeviceModel.getUserEmail());
+//                        intentHomeMAC.putExtra("mac", addDeviceModel.getMac());
+//                        intentHomeMAC.putExtra("deviceName", addDeviceModel.getDeviceName());
+//                        intentHomeMAC.putExtra("status", addDeviceModel.getStatus());
+//                        intentHomeMAC.putExtra("uid", addDeviceModel.getUid());
+//                        intentHomeMAC.putExtra("userPhone", addDeviceModel.getUserPhone());
+//                        startActivity(intentHomeMAC);
+//                        finish();
+//                    }
+//                } else {
+//                    hideProgressBar();
+//                    Toast.makeText(UserProfileSearch.this, "Opps!! Entered address Not found", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//                hideProgressBar();
+//                Toast.makeText(UserProfileSearch.this, "Request Failed, Please try again", Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
     }
 
     @Override
     public void onBackPressed() {
         finishAffinity();
+        finish();
     }
 
     @Override

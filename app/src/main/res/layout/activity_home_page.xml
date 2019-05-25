@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,6 +9,7 @@
     tools:context=".activity.HomePage">
 
     <RelativeLayout
+        android:id="@+id/home_top_navigation"
         android:layout_width="match_parent"
         android:layout_height="56dp">
 
@@ -60,108 +61,94 @@
     </RelativeLayout>
 
     <View
+        android:layout_below="@+id/home_top_navigation"
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:background="@color/colorPrimaryYellow" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="10dp">
-        <ScrollView
-            android:gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1.8">
-
         <LinearLayout
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:gravity="center_vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center"
             android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="match_parent"
+            <ImageView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:orientation="vertical">
-
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:src="@drawable/logo" />
-
-
-                    <EditText
-                        android:id="@+id/home_search_ID"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/search_border"
-                        android:hint="IMEI/MAC Search"
-                        android:drawableEnd="@drawable/ic_inside_search"
-                        android:textAlignment="center"
-                        android:maxLength="15"
-                        android:textSize="@dimen/font_size_14"
-                        android:textColor="@color/colorPrimaryWhite"
-                        android:textColorHint="@color/colorHintText"
-                        android:inputType="text"
-                        android:imeOptions="actionSearch"/>
-                <Button
-                    android:id="@+id/home_search_button"
-                    android:layout_marginTop="10dp"
-                    android:layout_gravity="center"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
-                    android:text="search"
-                    android:textColor="@color/colorPrimaryWhite"
-                    android:background="@drawable/search_border"/>
-            </LinearLayout>
-        </LinearLayout>
-        </ScrollView>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="bottom"
-            android:orientation="vertical">
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/logo" />
 
             <RelativeLayout
+                android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center">
+                android:layout_height="55dp">
 
-                <LinearLayout
-                    android:id="@+id/home_website_ID"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                <EditText
+                    android:id="@+id/home_search_ID"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/search_border"
+                    android:hint="IMEI/MAC Search"
+                    android:textAlignment="center"
+                    android:maxLength="15"
+                    android:textSize="@dimen/font_size_14"
+                    android:textColor="@color/colorPrimaryWhite"
+                    android:textColorHint="@color/colorHintText"
+                    android:inputType="text"
+                    android:imeOptions="actionSearch" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="www.own"
-                        android:textColor="@color/colorPrimaryWhite" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="i"
-                        android:textColor="@color/colorPrimaryYellow"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="mei.com"
-                        android:textColor="@color/colorPrimaryWhite" />
-                </LinearLayout>
+                <ImageView
+                    android:id="@+id/home_search_button"
+                    android:layout_alignParentEnd="true"
+                    android:layout_width="55dp"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_inside_search" />
             </RelativeLayout>
         </LinearLayout>
-    </LinearLayout>
-</LinearLayout>
+
+
+
+                    <!--<Button-->
+                    <!--android:id="@+id/home_search_button"-->
+                    <!--android:layout_marginTop="10dp"-->
+                    <!--android:layout_gravity="center"-->
+                    <!--android:layout_width="100dp"-->
+                    <!--android:layout_height="50dp"-->
+                    <!--android:text="search"-->
+                    <!--android:textColor="@color/colorPrimaryWhite"-->
+                    <!--android:background="@drawable/search_border"/>-->
+
+    <RelativeLayout
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:gravity="center_horizontal">
+
+        <LinearLayout
+            android:id="@+id/home_website_ID"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="www.own"
+                android:textColor="@color/colorPrimaryWhite" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="i"
+                android:textColor="@color/colorPrimaryYellow"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="mei.com"
+                android:textColor="@color/colorPrimaryWhite" />
+        </LinearLayout>
+    </RelativeLayout>
+</RelativeLayout>

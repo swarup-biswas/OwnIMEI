@@ -9,13 +9,13 @@ import android.webkit.WebView;
 import com.example.ownimei.R;
 import com.example.ownimei.webclint.WebClint;
 
-public class VersityWebActivity extends AppCompatActivity {
+public class ownIMEIWebActivity extends AppCompatActivity {
     private WebView webView;
-    private String uri = "http://unisouthasia.com/";
+    private String uri = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_versity_web);
+        setContentView(R.layout.activity_ownimei_web);
         webView = findViewById(R.id.web_view_ID);
 
         webView.setWebViewClient(new WebClint());

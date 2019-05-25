@@ -35,9 +35,9 @@
         <item>Delete</item>
     </string-array>
 
-    <string name="unisa">University of South Asia</string>
+    <string name="unisa">www.ownimei.com</string>
     <string name="about">Be a student of University of South Asia,We feel proud and be a part of BCSE. Specially thanks to our honorable all BCSE department teachers.</string>
-    <string name="about_app">OwnIMEI is the platform which show the owner of the device and current status of the device.It will protect the device from cloning.
+    <string name="about_app">OwnIMEI is the platform which show the owner and current status of the device.It will protect the device from IMEI/MAC cloning.
         Check If the phone/laptop has been lost/stolen any where in the world.
     If you are going to buy used phone/laptop, Make sure that it has not been reported as lost/stolen.</string>
     <string name="claim">Your claim has been accepted. Now it is under considering. We will notify you the result in your mail within 24 working hours.</string>
@@ -46,5 +46,7 @@
     <string name="gps_dialog">GPS network not enabled \n Please enable location</string>
     <string name="imei_find">Please open your dialer pad and dial <![CDATA[ <b><font color=#2DC92D>*#06#</b>]]>  for find IMEI.</string>
     <string name="imei_open_dialer">Click here to open dialer pad.</string>
+    <string name="about_web_toast">Under developing.</string>
+    <string name="about_developer">Developed by \nSwarup Biswas.</string>
 
 </resources>

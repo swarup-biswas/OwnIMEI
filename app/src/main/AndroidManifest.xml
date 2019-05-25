@@ -52,7 +52,7 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".activity.ShowSearchResultActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".activity.VersityWebActivity" />
+        <activity android:name=".activity.ownIMEIWebActivity" />
         <activity
             android:name=".activity.EditProfileActivity"
             android:screenOrientation="portrait" />
