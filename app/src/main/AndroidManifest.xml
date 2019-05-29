@@ -76,19 +76,10 @@
             android:name=".activity.Help"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.History"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activity.PhoneVerificationSignup"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".activity.UserProfileSearch"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.AddDevice"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activity.ForgotPasswordSetPassword"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.ForgotPasswordInputMailOrPhone"

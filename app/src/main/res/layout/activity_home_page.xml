@@ -107,18 +107,6 @@
             </RelativeLayout>
         </LinearLayout>
 
-
-
-                    <!--<Button-->
-                    <!--android:id="@+id/home_search_button"-->
-                    <!--android:layout_marginTop="10dp"-->
-                    <!--android:layout_gravity="center"-->
-                    <!--android:layout_width="100dp"-->
-                    <!--android:layout_height="50dp"-->
-                    <!--android:text="search"-->
-                    <!--android:textColor="@color/colorPrimaryWhite"-->
-                    <!--android:background="@drawable/search_border"/>-->
-
     <RelativeLayout
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
